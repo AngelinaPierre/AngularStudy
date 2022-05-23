@@ -1,2 +1,0 @@
-# AngularStudy
-Angular theory
