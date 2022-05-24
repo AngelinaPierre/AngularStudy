@@ -344,22 +344,156 @@ Update the binding in the template to announce the hero's name and show both id 
 
 The browser refreshes and displays the hero's information.
 
+<br>
+
+### `Format with the UppercasePipe`
+
+<br>
+
+Modify the `hero.name` binding like this:
+
+~~~
+<h2>{{hero.name | uppercase}} Details</h2>
+~~~
+
+<br>
+
+- The browser refreshes and now the hero's name is displayed in capital letters.
+- The word `uppercase` in the interpolation binding, right after the pipe (`|`) character, activates the built-in `UppercasePipe`.
+- [Pipes](https://angular.io/guide/pipes) are a good way to format strings, currency amounts, dates and other display data.
+- Angular ships with several built-in pipes and you can create your own.
 
 
+<br>
+
+### Edit the hero
+
+- Users should be able to edit the hero name in an `<input>` textbox.
+- The textbox should both `display` the hero's `name` property and `update` that property as the user types.
+- That means data flows from the component class `out to the screen` and from the screen `back to the class`.
+- To automate that data flow, setup a two-way data binding between the `<input>` form element and the `hero.name` property.
+
+<br>
+
+#### `two-way binding`
+
+<br>
+
+- Refactor the details area in the `HeroesComponent` template so it looks like this:
+
+~~~ 
+<div>
+  <label for="name">Hero name: </label>
+  <input id="name" [(ngModel)]="hero.name" placeholder="name">
+</div>
+~~~
+
+<br>
+
+- `[(ngModule)]` : Is Angular's two-way data binding syntax.
+- Here it binds the `hero.name` property to the HTML textbox so that data can flow in `both directions`: from the `hero.name` property to the textbox and from the textbox to the `hero.name`
+
+<br>
+
+#### `The missing FormsModule`
+
+<br>
+
+- Notice that the application stopped working when you added `[(ngModel)]`.
+- To see the error, open the browser development tools and look in the console for a message like:
+
+~~~
+Template parse errors:
+Can't bind to 'ngModel' since it isn't a known property of 'input'.
+~~~
+
+<br>
+
+- Although `ngModel` is a valid Angular directive, it isn't available by default.
+- It belongs to the optional `FormsModule` and you must opt-in to using it.
 
 
+<br>
+
+### AppModule
+
+<br>
+
+- Angular needs to know how the pieces of your application fit together and what other files and libraries the application requires. This information is called `metadata`.
+- Some of the metadata is in the `@Component` decorators that you added to your component classes. 
+- Other critical metadata is in `@NgModule` decorators.
+- The mos important `@NgModule` decorator annotates the top-level `AppModule` class.
+- The Angular CLI generated an `AppModule` class in `src/app/app.module.ts` when it created the project.
+- There is where you opt-in to the `FormsModule`
+
+<br>
+
+#### `Import FormsModule`
+
+<br>
+
+- Open `AppModule` (app.module.ts) and import the `FormsModule` symbol from the `@angular/forms` library.
+
+~~~
+import { FormsModule } from '@angular/forms'; <-- NgModel lives here
+~~~
+
+<br>
+
+- Then add `FormsModule` to the `@NgModule` metadata's `imports` arrya, which contains a list of external modules that the application needs.
+
+~~~
+[app.module.ts (#NgModule imports)]
+imports: [
+  BrowserModule,
+  FormsModule
+],
+~~~
+
+<br>
+
+- When the browser refreshes, the application should work again. You can edit the hero's name and see the changes reflected immediately in the `<h2>` above the textbox.
+
+<br>
+
+### Declare HeroesComponent
+
+<br>
+
+- Every component must be declared in `exactly one` [NgModule](https://angular.io/guide/ngmodules).
+- You didn't declare the `HeroesComponent`. So why did the application work?
+- It worked because the Angular CLI declared `HeroesComponent` in the `AppModule` when it generated that component.
+- Open `srx/app/app.module.ts` and find `HeroesComponent` imported near the top.
+
+~~~
+import { HeroesComponent } from './heroes/heroes.component';
+~~~
+
+<br>
+
+- The `HeroesComponent` is declared in the `@NgModule.declarations` array.
+
+~~~
+[src/app/app.module.ts]
+declarations: [
+  AppComponent,
+  HeroesComponent,
+],
+~~~
+
+<br>
+
+> `AppModule` declares both application components, `AppComponent` and `HeroesComponent`.
 
 
-
-
-
-
-
-
-
-
-
-
+### `Summary`
+- You used the CLI to create a second `HeroesComponent`
+- You displayed the `HeroesComponent` by adding it to the `AppComponent` shell
+- You applied the `UppercasePipe` to format the name.
+- You used two-way data binding with the `ngModel` directive
+- You leraned about the `AppModule`
+- You imported the `FormsModule` in the `AppModule` so that Angular would recognize and apply the `ngModel` directive.
+- You learned the importance of declaring components in the `AppModule` and appreciated that the CLI declared it for you.
 
 
 
