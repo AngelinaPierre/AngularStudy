@@ -496,6 +496,131 @@ declarations: [
 - You learned the importance of declaring components in the `AppModule` and appreciated that the CLI declared it for you.
 
 
+<br>
+
+## Display a seleciton list
+
+<br>
+
+- In this page, you'll expand the Tour of heroes application to display a list of heroes, and allow users to select a hero and display the hero's details.
+
+<br>
+
+### Create mock heroes
+
+<br>
+
+- You'll need some heroes to display.
+- Eventually you'll get them from a remote data server. For now, you'll create some `mock heroes` and pretend they came from the server.
+- Create a file called `mock-heroes.ts` in the `src/app/` folder. Define a `HEROES` constant as an array of ten heroes and export it. The file should look like this.
+
+~~~
+import { hero } from './hero'
+
+export const HEROES: Hero[] = [
+  { id: 12, name: 'Dr.nice' },
+  { id: 13, name: 'Bombasto' },
+  { id: 14, name: 'Celeritas' },
+  { id: 15, name: 'Magneta' },
+  { id: 16, name: 'RubberMan' },
+  { id: 17, name: 'Dynama' },
+  { id: 18, name: 'Dr. IQ' },
+  { id: 19, name: 'Magma' },
+  { id: 20, name: 'Tornado' }
+]
+~~~
+
+<br>
+
+### Display Heroes
+
+<br>
+
+- Open the `HeroesComponent` class file and import the mock `HEROES`.
+
+~~~
+import { HEROES } from '../mock-heroes'
+~~~
+
+<br>
+
+- In the same file (`HeroesComponent` class), define a component property called `heroes` to expose the `HEROES` array for binding.
+
+~~~
+export class HeroesComponent implements OnInit {
+  heroes = HEROES;
+}
+~~~
+
+<br>
+
+#### `List heroes with *ngFor`
+
+<br>
+
+Open the `HeroesComponent` template file and make the following changes:
+1) Add an `<h2>` at the top
+2) Below it add an HTML unordered list (`<ul>`) element.
+3) Insert an `<li>` within the `<ul>`
+4) Place a `<button>` inside the `<li>` that displays properties of a `hero` inside `<span>` elements.
+5) Sprinkle some CSS classes for styling (you'll add the CSS styles shortly).
+
+<br>
+
+Make it look like this:
+
+~~~
+[heroes.component.html]
+
+<h2> My Heroes </h2>
+<ul class="heroes">
+  <li>
+    <button>
+      <span class="badge>{{hero.id}}</span>
+      <span class="name">{{hero.name}}</span>
+    </button>
+  </li>
+</ul>
+~~~
+
+<br>
+
+That displays an error since the property 'hero' does not exist. To have access to each individual hero and list them all, add an `*ngFor` to the `<li>` to iterate through the list of heroes:
+
+~~~
+<li *ngFor="let hero of heroes">
+~~~
+<br>
+
+- The `*ngFor` is Angular's `repeater` directive. It repeats the host element for each element in a list.
+- The syntax in this example is as follows:
+
+`<li>` : The host element.
+`heroes`: Holds the mock heroes list from the `HeroesComponent` class, the mock heroes list.
+`hero`: Holds the current hero object for each iteration through the list.
+
+> Don't forget the asterisk (*) character in front of `NgFor`. It's a critical part of the syntax.
+
+<br>
+
+After the browser refreshes, the list of heroes appears.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
