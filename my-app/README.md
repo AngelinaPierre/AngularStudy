@@ -605,6 +605,28 @@ That displays an error since the property 'hero' does not exist. To have access 
 
 After the browser refreshes, the list of heroes appears.
 
+> `Interactive Elements`
+> 
+> NOTE: Inside the `<li>` element, wee've wrapped the hero's details in a `<button>` element. Later on we make the hero clickable, and it is better for accessibility purposes to use natively interactive HTML elements (e.g `<button>`) instead of addign event listeners to non-interactive ones (e.g. `<li>`).
+> 
+> For more details on accessibility, see [Accessibility in Angular](https://angular.io/guide/accessibility)
+
+<br>
+
+### `Style the heroes`
+
+<br>
+
+- The heroes list should be attractive and should respond visually when users hover over and select a hero from the list.
+- In the [first tutorial](https://angular.io/tutorial/toh-pt0#app-wide-styles), you set the basic styles for the entire application in `styles.css`.
+- That stylesheet didn't include styles for this list of heroes.
+- You could add more styles to `styles.css` and keep growing that stylesheet as you add components.
+- You may prefer instead to define private styles for a specific component and keep everything a component needs - the code, the HTML, and the CSS - together in one place.
+- This approach makes it easier to re-use the component somewhere else and deliver the component's intended appearance even if the global styles are different.
+- You define private styles either inline in the `@Component.styles` array or as stylesheet file(s) identified in the `@Component.styleUrls` array.
+- When the CLI generated the `HeroesComponent`, it created an empty `heroes.component.css` stylesheet for the `HeroesComponent` and pointed to it in `@Component.styleUrls` like this.
+
+
 
 
 
