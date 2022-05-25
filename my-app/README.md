@@ -185,7 +185,7 @@ button:disabled {
 
 <br>
 
-## The hero editor
+## `1 - The hero editor`
 
 <br>
 
@@ -498,7 +498,7 @@ declarations: [
 
 <br>
 
-## Display a seleciton list
+## `2 - Display a seleciton list`
 
 <br>
 
@@ -625,6 +625,330 @@ After the browser refreshes, the list of heroes appears.
 - This approach makes it easier to re-use the component somewhere else and deliver the component's intended appearance even if the global styles are different.
 - You define private styles either inline in the `@Component.styles` array or as stylesheet file(s) identified in the `@Component.styleUrls` array.
 - When the CLI generated the `HeroesComponent`, it created an empty `heroes.component.css` stylesheet for the `HeroesComponent` and pointed to it in `@Component.styleUrls` like this.
+
+~~~
+[src/app/components/heroes/heroes.component.ts](@Component)
+
+@Component({
+  selector: 'app-heroes',
+  templateUrl: './heroes.component.html',
+  styleUrls: ['./heroes.component.css']
+})
+~~~
+
+<br>
+
+- Open the `heroes.component.css` file and paste in the private CSS styles for the `HeroesComponent`. You'll find them in the [final code review](https://angular.io/tutorial/toh-pt2#final-code-review) at the bottom of this guide.
+
+> Styles and stylesheets identified in `@Component` metadata are scoped to that specific component. The `heroes.component.css` styles apply only to the `HeroesComponent` and don't affect the outer HTML or the HTML in any other component.
+
+
+<br>
+
+### Viewing details
+
+<br>
+
+- When the user clicks a hero in the list, the component should display the selected hero's details at the bottom of the page.
+- In this section, you'll listen for the hero item click event and display/update the hero details.
+
+<br>
+
+#### `Add a click event binding`
+
+<br>
+
+- Add a click event binding to the `<button>` in the `<li>` like this:
+
+~~~
+<li *ngFor="let hero of heroes">
+  <button type="button" (click)="onSelect(hero)">
+</li>
+~~~
+
+- This is an example of Angular's [event binding](https://angular.io/guide/event-binding) syntax.
+- The parentheses around `click` tell Angular to listen for the `<button>` element's `click` event.
+- When the user click in the `<button>`, Angular executes the `onSeleect(hero)` expression.
+- In the next section, define an `onSelect()` method in `HeroesComponent` to display the hero that was defined in the `*ngFor` expression.
+
+<br>
+
+#### `Add the click event handler`
+
+<br>
+
+- Rename the component's `hero` property to `selectedHero` but don't assign any value to it since there is no `selected hero` when the application starts.
+- Add the following `onSelect()` method, which assigns the clicked hero from the template to the component's `selectedHero`.
+
+~~~
+selectedHero?: Hero:
+onSelect(hero: Hero): void {
+  this.selectedHero = hero;
+}
+~~~
+
+<br>
+
+#### `Add a details section`
+
+<br>
+
+- Currently, you have a list in the component template.
+- To click on a hero on the list and reveal details about that hero, you need a section for the detils to render in the template.
+- Add the following to `heroes.component.html` beneath the list section:
+
+~~~
+<div *ngIf="selectedHero">
+  <h2>{{selectedHero.name | uppercase}} Details</h2>
+  <div>id: {{selectedHero.id}}</div>
+  <div>
+    <label for="hero-name">Hero name: </label>
+    <input id="hero-name" [(ngModel)]="selectedHero.name" placeholder="name">
+  </div>
+</div>
+~~~
+
+<br>
+
+- The hero details should only be displayed when a hero is selected.
+- When a component is created initially, there is no selected hero, so we add the `*ngIf` directive to the `<div>` that wraps the hero details, to instruct Angular to render the section only when the `selectedHero` is actually defined (after it has been selected by clicking on a hero).
+
+> Don't forget the asterisk (*) character in front of `ngIf`. It's a critical part of the syntax.
+
+<br>
+
+### Style the selected hero
+
+<br>
+
+- To help identify the selected hero, you can use the `.selected` CSS class in the [styles you added earlier](https://angular.io/tutorial/toh-pt2#styles).
+- To apply the `.selected` class to the `<li>` when the user clicks it, use class binding.
+
+![](./src/assets/Capturar1.PNG)
+
+<br>
+
+- Angular's [class binding](https://angular.io/guide/attribute-binding#class-binding) can add and remove a CSS class conditionally.
+- Add `[class.some-css-class]="some-condition"` to the element you want to style.
+- Add the following `[class.selected]` binding to the `<button>` in the `HeroesComponent` template:
+
+~~~
+[class.selected]="hero === selectedHero"
+~~~
+
+<br>
+
+- When the current row hero is the same as the `selectedHero`, Angular adds the `selected`CSS class.
+- When the two heroes are different, Angular removes the class.
+- The finished `<li>` looks like this:
+
+~~~
+<li *ngFor="let hero of heroes">
+  <button [class.selected]="hero === selectedHero" type="button" (click)>="onSelect(hero)">
+    <span class="badge">{{hero.id}}</span>
+    <span class="name">{{hero.name}}</span>
+  </button>
+</li>
+~~~
+
+<br>
+
+
+### Summary
+
+<br>
+
+- The Tour of Heroes application displays a list of heroes with a detail view.
+- The user can select a hero and see that hero's details.
+- You used `*ngFor` to display a list
+- You used `*ngIf` to conditionally include or exclude a block of HTML.
+- You can toggle a CSS style class with a `class` binding.
+
+
+<br>
+
+## `3 - Create a feature component`
+
+<br>
+
+- At the moment, the `HeroesComponent` displays both the list of heroes and the selected hero's details.
+- Keeping all features in one component as the application grows will not be maintainable.
+- You'll want to split up large components into smaller sub-components, each focused on a specific task or workflow.
+- In this page, you'll take the first step in that direction by moving the hero details into a separate, reusable `HeroDetailComponent`.
+- The `HeroesComponent` will only present the list of heroes.
+- The `HeroDetailComponent` will present details of selected hero.
+
+<br>
+
+### Make the HeroDetailComponent
+
+<br>
+
+- Use the Angular CLI to generate the new component named `hero-detail`.
+
+~~~
+ng g component hero-detail
+~~~
+
+<br>
+
+The command scaffolds the following:
+- Creates a directory `src/app/components/hero-detail`
+
+Inside the directory four files are generated:
+- A CSS file for the component styles.
+- An HTML file for the component template.
+- A TypeScript file with a component class named `HeroDetailComponent`
+- A test file for the `HeroDetailComponent` class.
+
+The command also adds the `HeroDetailComponent` as a declaration in the `@NgMOdule` decorator of the `src/app/app.module.ts` file.
+
+
+<br>
+
+#### `Write the template`
+
+<br>
+
+- Cut the HTML for the hero detail from the bottom of the `HeroesCOmponent` template and paste it over the generated boilerplate in the `HeroDetailComponent` template.
+- The pasted HTML refers to a `selectedHero`.
+- The new `HeroDetailComponent` can present `any` hero, not just a selected hero.
+- So replace "selectedHero" with "hero" everywhere in the template.
+- When you're done, the `HeroDetailComponent`template should look like this:
+
+~~~
+<div *ngIf="hero">
+  <h2>{{hero.name | uppercase}} Details</h2>
+  <div><span>id: </span>{{hero.id}}</div>
+  <div>
+    <label for="hero-name">Hero name: </label>
+    <input id="hero-name" [(ngModel)]="hero.name" placeholder="name">
+  </div>
+</div>
+~~~
+
+
+<br>
+
+#### `Add the `@Input()` hero property`
+
+<br>
+
+- The `HeroDetailComponent` template binds to the component's `hero` property which is of type `Hero`.
+- Open the `HeroDetailComponent` class file and import the `Hero` symbol.
+
+~~~
+import { Hero } from './src/app/interfaces/hero.ts'
+~~~
+
+- The `hero` property [must be an `Input` property](https://angular.io/guide/inputs-outputs), annotated with the `@Input()` decorator, because the `external HeroesComponent` [will bind to it](https://angular.io/tutorial/toh-pt3#heroes-component-template) like this:
+
+~~~
+<app-hero-detail [hero]="selectedHero"></app-hero-detail>
+~~~
+
+- Amend the `@angular/core` import statement to include the `Input` symbol.
+
+~~~
+import { Component, OnInit, Input } from '@angular/core';
+~~~
+
+- Add a `hero` property, preceded by the `@Input()` decorator.
+
+~~~
+@Input() hero?: Hero;
+~~~
+
+- That's the only change you should make to the `HeroDetailComponent` class.
+- There are no more properties.
+- There's no presentation logic.
+- This component only receives a hero object through its `hero` property and displays it.
+
+
+<br>
+
+### Show the HeroDetailComponent
+
+<br>
+
+- The `HeroesComponent` used to display the hero details on its own, before you removed that portion of the tempalte.
+- This section guides you through delegating logic to the `HeroDetailComponent`.
+- The two components will have a parent/child relationship.
+- The parent `HeroesComponent`will control the child `HeroDetailComponent` by sending it a new hero to display whenever the user selects a hero from the list.
+- You won't change the `HeroesComponent` class but you will change its tempalte.
+
+<br>
+
+#### `Update the HeroesComponent template`
+
+<br>
+
+- The `HeroDetailComponent` selector is `'app-hero-detail'`.
+- Add an `<app-hero-detail>` element near the bottom of the `HeroesComponent` template, where the hero detail view used to be.
+- Bind the `HeroesComponent.selectedHero` to the element's `hero` property like this:
+
+~~~
+<app-hero-detail [hero]="selectedHero"></app-hero-detail>
+~~~
+
+- `[hero]="selectedHero"` is Angular [property binding](https://angular.io/guide/property-binding).
+- It's a `one way` data binding from the `selectedHero` property of the `HeroesComponent` to the `hero` property of the target element, which maps to the `hero` property of the `HeroDetailComponent`.
+- Now when the user clicks a hero in the list, the `selectedHero` changes.
+- When the `selectedHero` changes, the `property binding` updates `hero` and the `HeroDetailComponent` displays the new hero.
+- The revised `HeroesComponent` template should look like this:
+
+~~~
+<h2>My Heroes</h2>
+
+<ul class="heroes">
+  <li *ngFor="let hero of heroes">
+    <button [class.selected]="hero === selectedHero" type="button" (click)="onSelect(hero)">
+      <span class="badge">{{hero.id}}</span>
+      <span class="name">{{hero.name}}</span>
+    </button>
+  </li>
+</ul>
+
+<app-hero-detail [hero]="selectedHero"></app-hero-detail>
+~~~
+
+- The browser refreshes and the application starts working again as it did before
+
+
+<br>
+
+### `What changed?`
+
+<br>
+
+- As [before](https://angular.io/tutorial/toh-pt2), whenever a user clicks on a hero name, the hero detail appears below the hero list. Now the `HeroDetailComponent` is presenting those details instead of the `HeroesComponent`.
+- Refactoring the original `HeroesComponent` into two components yields benefits, both now and in the future:
+    1) You reduced the `HeroesComponent` responsabilities.
+    2) You can evolve the `HeroDetailComponent` into a rich hero editor without touching the parent `HeroesComponent`.
+    3) You can evolve the `HeroesComponent` without touching the hero detail view.
+    4) You can re-use the `HeroDetailComponent` in the template of some future component.
+
+
+<br>
+
+### `Summary`
+
+- You created a separatem reusable `HeroDetailComponent`.
+- You used a [property binding](https://angular.io/guide/property-binding) to give the parent `HeroesComponent`control over the child `HeroDetailComponent`.
+- You used the [`@Input` decorator](https://angular.io/guide/property-binding) to make the `hero` property available for binding by the external `HeroesComponent`.
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
