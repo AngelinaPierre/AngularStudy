@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Hero } from 'src/app/interfaces/hero';
-import { HEROES } from 'src/app/interfaces/mock-heroes';
-import { FormsModule } from '@angular/forms';
+import { HeroService } from 'src/app/services/hero/hero.service';
+
 
 @Component({
   selector: 'app-heroes',
@@ -9,8 +9,22 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./heroes.component.scss']
 })
 export class HeroesComponent implements OnInit {
-  heroes = HEROES;
+  heroes: Hero[] = [];
   selectedHero?: Hero;
+
+
+  constructor(
+    private heroService: HeroService,
+  ) { }
+
+
+  ngOnInit(): void {
+    this.getHeroes();
+  }
+
+  getHeroes(): void {
+    this.heroes = this.heroService.getHeroes();
+  }
 
   onSelect(hero: Hero): void{
     this.selectedHero = hero;
@@ -18,9 +32,5 @@ export class HeroesComponent implements OnInit {
   }
 
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
 
 }

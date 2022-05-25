@@ -184,6 +184,7 @@ button:disabled {
 
 
 <br>
+<hr> 
 
 ## `1 - The hero editor`
 
@@ -497,6 +498,7 @@ declarations: [
 
 
 <br>
+<hr>
 
 ## `2 - Display a seleciton list`
 
@@ -766,6 +768,7 @@ onSelect(hero: Hero): void {
 
 
 <br>
+<hr>
 
 ## `3 - Create a feature component`
 
@@ -937,33 +940,198 @@ import { Component, OnInit, Input } from '@angular/core';
 - You used a [property binding](https://angular.io/guide/property-binding) to give the parent `HeroesComponent`control over the child `HeroDetailComponent`.
 - You used the [`@Input` decorator](https://angular.io/guide/property-binding) to make the `hero` property available for binding by the external `HeroesComponent`.
 
+<br>
+<hr>
 
 
+## `4 - Add Services`
+
+<br>
+
+- The Tour of Heroes `HeroesComponent` is currently getting and displaying fake data.
+- After the refactoring in this tutorial, `HeroesComponent` will be lean and focused on supporting the view.
+- It will also be easier to unit-test with a mock service.
+
+<br>
+<hr>
+
+### Why Services
+
+<br>
+
+- Components shouldn't fetch or save data directly and they certainly should'nt knowingly present fake data.
+- They should focus on presenting data and delegate data access to a service.
+- In this tutorial, you'll create a `HeroService`that all application classes can use to get heroes.
+- Instead of creating that service with the `new` [keyword](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/new), you'll rely on Angular [dependency injection](https://angular.io/guide/dependency-injection) to inject it into the `HeroesComponent` constructor.
+- Services are a great way to share information among classes that `don't know each other`.
+- You'll create a `MessageService` and inject it in two places.
+  -  Inject in `HeroService`, which uses the servicec to send a message.
+  -  Inject in `MessagesComponent`, which displays that message, and also displays the ID when the user clicks a hero.
+
+<br>
+<hr>
+
+### Create the HeroService
+
+<br>
+
+- Using the Angular CLI, create a service called hero.
+
+~~~
+ng g service hero
+~~~
+
+- The command generates a skeleton `HeroService` class in `/src/app/services/hero/hero.service.ts` as follows:
+
+~~~
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class HeroService {
+  constructor(){ }
+}
+~~~
+
+#### [@Injectable()](https://angular.io/api/core/Injectable) `services`
+
+<br>
+
+- Notice that the new service imports the Angular `Injectable` symbol and annotates the class with the `@Injectable()` decorator.
+- This marks the class as one that participates in the `dependency injection system`.
+- The `HeroService` class is going to provide an injectable service and it can also have its own injected dependencies.
+- It doesn't have any dependencies yet, but [it will soon](https://angular.io/tutorial/toh-pt4#inject-message-service)
+- The `@Injectable()` decorator accepts a metadata object for the service, the same way the `@Component()` decorator did for your component class.
+
+<br>
+
+#### `Get Hero data`
+
+<br>
+
+- The `HeroService` could het hero data from anywhere - a web service, local storage, or a mock data source.
+- Removing data access from components means you can change your mind about the implementation anytime, without touching any components.
+- They don't know how the service works.
+- The implementation in this tutorial will continue to deliver mock heroes.
+- Import the `Hero` and `HEROES`
+
+~~~
+[/src/app/services/hero/hero.service.ts]
+import { HEROES } from './src/app/interfaces/mock-heroes'
+import { Hero } from './src/app/interfaces/hero
+~~~
+
+- Add the `getHeroes` method to return the `mock heroes`
+
+~~~
+getHeroes(): Hero[] {
+  return HEROES;
+}
+~~~
+
+<br>
+
+<hr>
+
+### Provide the HeroService
+
+<br>
+
+- You must make the `HeroService` available to the dependency injection system before Angular can `Inject` it into the `HeroesComponent` by registering a `provider`.
+- A provider is something that can create or deliver a service; in this case, it instantiates the `HeroService` class to provide the service.
+- To make sure that the `HeroService` can provide this service, register it with the `injector`, which is the object that is responsible for choosing and injecting the provider where the application requires it.
+- By default, the Angular CLI command `ng generate service` registers a provider woth the `root injector` for your service by including provider metadata, that is `providedIn: 'root' ` in the `@Injectable()` decorator.
+
+~~~
+@Injectable({
+  providedIn: 'root',
+})
+~~~
+
+- When you provide the service at the root level, Angular creates a single, shared instance of `HeroService` and injects into any class that asks for it.
+- Registering the provider in the `@Injectable` metadata also allows Angular to optmize an application by removing the service if it turns out not to be used after all.
+
+> To learn more about providers, see the [Providers section](https://angular.io/guide/providers). To learn more about injectors, see the [Dependency Injection guide](https://angular.io/guide/dependency-injection).
+
+- The `HeroService` is now ready to plug into the `HeroesComponent`.
+
+> This is an interim code sample that will allow you to provide and use the `HeroService`. At this point, the code will differ from the `HeroService` in the ["final code review"](https://angular.io/tutorial/toh-pt4#final-code-review).
+
+<br>
+<hr>
+
+### Update HeroesComponent
+
+<br>
+
+- Open the `HeroesComponent`class file.
+- Delete the `HEROES` import, because you won't need that anymore.
+- Import the `HeroService`instead.
+
+~~~
+import { HeroService } from './src/app/services/hero/hero.service.ts
+~~~
+
+- Replace the definition of the `heroes` property with a declaration.
+
+~~~
+heroes: Hero[] = [];
+~~~
+
+<br>
+
+### Inject the HeroService
+
+<br>
+
+- Add a private `heroService` parameter of type `HeroService` to the constructor.
+
+~~~
+constructor(
+  private heroService: HeroService
+) {}
+~~~
+
+- The parameter simultaneously defines a private `HeroService` property and identifies it as a `HeroService` injection site.
+- When Angular creates a `HeroesComponent`, the [Dependency Injection](https://angular.io/guide/dependency-injection) system sets the `heroService` parameter to the singleton instance of `HeroService`.
 
 
+<br>
 
+### Add getHeroes()
 
+- Create a method to retrive the heroes from the service.
 
+~~~
+getHeroes(): void {
+  this.heroes = this.heroService.getHeroes();
+}
+~~~
 
+<br>
 
+### Call it in ngOnInit()
 
+<br>
 
+- While you could call `getHeroes()` in the constructor, that's not the best practice.
+- Reserve the constructor for minimal initialization such as wiring constructor parameters to properties.
+- The constructor shouldn't do `anything`.
+- It certainly shouldn't call a function that makes HTTP requests to a remote server as a `real` data service would.
+- Instead, call `getHeroes()` inside the [ngOnInit lifecycle hook](https://angular.io/guide/lifecycle-hooks) and let Angular call `ngOnInit()` at an appropriate time `after` constructing a `HeroesComponent` instance.
 
+~~~
+ngOnInit(): void {
+  this.getHeroes();
+}
+~~~
 
+<br>
 
+### See it run
 
-
-
-
-
-
-
-
-
-
-
-
-
+After the browser refreshes, the application should run as before, showing a list of heroes and a hero detail view when you click on a hero name.
 
 
 
