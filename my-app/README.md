@@ -2068,13 +2068,90 @@ getHero(): void {
 - `HeroService` doesn't have a `getHero()` method. Add it now.
 
 
+<br>
 
+#### `Add HeroService.getHero()`
 
+<br>
 
+- Open `HeroService` and add the following `getHero()` method with the `id` after the `getHeroes()` method:
 
+~~~
+[hero.service.ts]
 
+getHero(id: number): Observable<Hero> {
+  // For now, assume that a hero with the specified 'id' always exists.
+  // Error handling will be added in the next step of the tutorial.
+  const hero = HEROES.find(h => h.id === id)!;
+  this.messageService.add(`HeroService: fetched hero id=${id}`);
+  return of(hero);
+}
+~~~
 
+~~~
+IMPORTANT!
+ 
+The backtick(`) characters define a JavaScript [template literal] for embedding the `id`.
+~~~
 
+- Like [getHeroes()](), `getHero()`has an asynchronous signature.
+- It returns a `mock hero` as an `Observable`, using the RxJS `of()` function.
+- You'll be able to re-implement `getHero()` as a real `Http` request without having to change the `HeroDetailComponent` that call it.
 
+<br>
 
+#### `Try it`
+
+- The browser refreshes and the application is working again.
+- You can click a hero in the dashboard or in the heroes list and navigate to that hero's detail view.
+- If you paste `localhost:4200/detail/11` in the browser address bar, the router navigates to the detail view for the hero with `id: 11`, "Dr.Nice".
+
+<br>
+
+#### `Find the way back`
+
+<br>
+
+- By clicking the browser's back button, you can go back to the hero list or dashboard view, depending upon which sent you to the detail view.
+- It would be nice to have a button on the `HeroDetail` view that can do that.
+- Add a `go back` button to the bottom of the component template and bind it to the component's `goBack()` method.
+
+~~~
+[hero-detail.component.html]
+
+<button type="button" (click)="goBack()">go back</button>
+~~~
+
+- Add a `goBack()` method to the component class that navigates backward one step in the browser's history stack using the [Location](https://angular.io/api/common/Location) service that you [injected previously](https://angular.io/tutorial/toh-pt5#hero-detail-ctor).
+
+~~~
+goBack(): void {
+  this.location.back();
+}
+~~~
+
+- Refresh the browser and start clicking.
+- Users can navigate around the app, from the dashboard to hero details and back, from heroes list to the mini detail to the hero details and back to the heroes again.
+- The details will look better when you add the private CSS styles to `hero-detail.component.css` as listed in one of the ["final code review"](https://angular.io/tutorial/toh-pt5#final-code-review) tabs below.
+
+<br>
+<hr>
+
+### Summary
+
+<br>
+
+- You added the Angular router to navigate among different components.
+- You turned the `AppComponent` into a navigation shell with `<a>` links and a [<router-outlet>](https://angular.io/api/router/RouterOutlet).
+- You configured the router in an `AppRoutingModule`.
+- You defined routes, a redirect route, and a parameterized route.
+- You used the [routerLink]() directive in anchor elements.
+- You refactored a tighly-couple master/deetail view into a routed detail view.
+- You used router link parameters to navigate to the detail view of a user-selected hero.
+- You shared the `HeroService` among multiple components.
+
+<br>
+<hr>
+
+## `GET DATA FROM A SERVER`
 
