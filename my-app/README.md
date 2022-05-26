@@ -1912,15 +1912,95 @@ const routes: Routes = [
 
 #### ´DashboardComponent hero links´
 
+<br>
 
+- The `DashboardComponent` hero links do nothing at the moment.
+- Now that the router has a route to `HeroDetailComponent`, fix the dashboard hero links to navigate using the `parameterized` dashboard route.
 
+~~~
+[dashboard.component.html]
 
+<a 
+  *ngFor="let hero of heroes" 
+  routerLink="/detail/{{hero.id}}"
+>{{hero.name}}</a>
+~~~
 
+- You're using Angular [interpolation binding](https://angular.io/guide/interpolation) within the [*ngFor](https://angular.io/api/common/NgForOf) repeater to insert the current iteration's `hero.id` into each [routerLink](https://angular.io/tutorial/toh-pt5#routerlink).
 
+<br>
 
+#### `HeroComponent hero links` 
 
+<br>
 
+- The hero items in the `HeroComponent` are `<li>` elements whose click events are bound to the component's `onSelect()` method.
 
+~~~
+[heros.component.html]
+
+<ul class="heroes">
+  <li *ngFor="let hero of heroes">
+    <button type="button" (click)="onSelect(hero)" [class.selected]="hero === selectedHero">
+      <span class="badge">{{hero.id}}</span>
+      <span class="name">{{hero.name}}</span>
+    </button>
+  </li>
+</ul>
+~~~
+
+- Strip the `<li>` back to just its [*ngFor](https://angular.io/api/common/NgForOf), wrap the badge and name in an anchor (`<a>`) element, and add a [routerLink]() attribute to the anchor that is the same as in the dashboard template.
+
+~~~
+<ul class="heroes">
+  <li *ngFor="let hero of heroes">
+    <a routerLink="/detail/{{hero.id}}">
+      <span class="badge">{{hero.id}}</span> {{hero.name}}
+    </a>
+  </li>
+</ul>
+~~~
+
+- You'll have to fix the private stylesheet (`heroes.component.scss`) to make the list look as it did before.
+- Revised styles are in the [final code review](https://angular.io/tutorial/toh-pt5#heroescomponent) at the bottom of this guide.
+
+<br>
+
+##### Remove dead code (optional)
+
+<br>
+
+- While the `HeroesComponent` class still works, the `onSelect()` method and `selectedHero` property are no longer used.
+- It's nice to tidy up and you'll be greteful to yourself later.
+- Here's the class after pruning away the dead code.
+
+~~~
+[heroes.component.ts]
+
+expor class HeroesComponent implements OnInit {
+  heroes: Hero[] = [];
+
+  constructor(
+    private heroService: HeroService,
+  ){}
+
+  ngOnInit(): void {
+    this.getHeroes();
+  }
+
+  getHeroes(): void {
+    this.heroService.getHeroes()
+      .subscribe(heros => this.heroes = heroes);
+  }
+}
+~~~
+
+<br>
+<hr>
+
+### Routable HeroDetailComponent
+
+<br>
 
 
 
