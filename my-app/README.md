@@ -2002,7 +2002,9 @@ expor class HeroesComponent implements OnInit {
 
 <br>
 
-
+- Previously, the parent `HeroesComponent` set the `HeroDetailComponent.hero` property and the `HeroDetailCOmponent` displayed the hero.
+- `HeroesComponent` doesn't do that anymore. 
+- Now the router create the `HeroDetailComponent` in response to a URL such as `~/detail/11`.
 
 
 
