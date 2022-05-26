@@ -2005,13 +2005,67 @@ expor class HeroesComponent implements OnInit {
 - Previously, the parent `HeroesComponent` set the `HeroDetailComponent.hero` property and the `HeroDetailCOmponent` displayed the hero.
 - `HeroesComponent` doesn't do that anymore. 
 - Now the router create the `HeroDetailComponent` in response to a URL such as `~/detail/11`.
+- The `HeroDetailComponent` needs a new way to obtain the hero-to-display.
+- This section explains the following:
+  - Get the route that created it
+  - Extract the `id` from the route
+  - Acquire the hero with that `id` from the server using the HeroService.
+- Add the following imports:
+
+~~~
+[hero-detail.component.ts]
+
+import { ActivatedRoute } from '@angular/router';
+import { Location } from '@angular/common';
+
+import { HeroService } from './src/app/services/hero/hero.service.ts';
+~~~
+
+- Inject the [ActivatedRoute](https://angular.io/api/router/ActivatedRoute), `HeroService`, and [Location](https://angular.io/api/common/Location) services into the constructor, saving their values in private fields.
+
+~~~
+[hero-detail.component.ts]
+
+constructor({
+  private route: ActivatedRoute,
+  private heroService: HeroService,
+  private location: Location,
+}) {}
+~~~
+
+- The [ActivatedRoute](https://angular.io/api/router/ActivatedRoute) holds information about the route to this instance of the `HeroDetailComponent`.
+- This component is interested in the route's parameters extracted from the URL.
+- The "id" parameter is the `id` of the hero to display.
+- The [HeroService](https://angular.io/tutorial/toh-pt4) gets hero data from the remote server and this component will use it to get the hero-to-display.
+- The [Location](https://angular.io/api/common/Location) is an Angular service for interacting with the browser. You'll use it [later](https://angular.io/tutorial/toh-pt5#goback) to navigate back to the view that navigated here.
+
+<br>
+
+#### `Extract the id route parameter`
+
+- In the `ngOnInit()` [lifecycle hook](https://angular.io/guide/lifecycle-hooks#oninit) call `getHero()` and define it as follows.
 
 
+~~~
+[hero-detail.component.ts]
 
+ngOnInit(): void {
+  this.getHero();
+}
 
+getHero(): void {
+  const id = Number(this.router.snapshot.paramMap.get('id'));
+  this.heroService.getHero(id)
+    .subscribe(hero => this.hero = hero);
+}
+~~~
 
-
-
+- The `route.snapshot` is a static image of the route information shortly after the component was created.
+- The `paramMap` is a dictionary of route parameter values extracted from the URL.
+- The `"id"` key return the `id` of the hero to fetch.
+- Route parameters are always strings. The javaScript `Number` function converts the string to a number, which is what a hero `id` should be.
+- The browser refreshes and the application crashes with a compiler error.
+- `HeroService` doesn't have a `getHero()` method. Add it now.
 
 
 
