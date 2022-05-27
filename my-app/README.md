@@ -2363,14 +2363,107 @@ getHeroes(): Observable<Hero[]>{
 
 <br>
 
-#### [HttpClient.get()]() `returns response data`
+#### [HttpClient.get()](https://angular.io/api/common/http/HttpClient#get) `returns response data`
 
 <br>
 
+- [HttpClient.get()](https://angular.io/api/common/http/HttpClient#get) returns the body of the response as an untyped JSON object by default.
+- Applying the optional type specifier, `<Hero[]>`, adds TypeScript capabilities, which reduce errors during compile time.
+- The server's data API determines the shape of the JSON data.
+- The `Tour of Heroes` data API returns the hero data as an array.
 
+> Other APIs may bury the data that you want within an object. You might have to dig that data out by processing the `Observable` result with th RxJS `map()` operator.
+> >
+> Although not discussed here, there's an example of `map()` in the `getHeroNo404()` method included in the sample source code.
 
+<br>
 
+#### `Error handling`
 
+<br>
+
+- Things go wrong, especially when you're getting data from a remote server.
+- The `HeroService.getHeroes()` method should catch errors and do something appropriate.
+- To catch errors, you `"pip" the observable` result from `http.get()´through an RxJS `catchError()` operator.
+- Import the `catchError` symbol from `rxjs/operators`, along with some other operators you'll need later.
+
+~~~
+[hero.service.ts] 
+
+import { catchError, map, tap } from 'rxjs/operators';
+~~~
+
+- Now extend the observable result with the `pipe()` method and give it a `catchError()` operator.
+
+~~~
+getHeroes(): Observable<Hero[]> {
+  return this.http.get<Hero[]>(this.heroesUrl)
+    .pipe(
+      catchError(this.handleError<Hero[]>('hgetHeroes', []))
+    );
+}
+~~~
+
+- The `catchError()` operator intercepts an `Observable that failed` .
+- The operator then passes the error to the error handling function.
+- The following `handleError()` method reports the error and then returns a innocuous result so that the aplpication keeps working.
+
+<br>
+
+##### handleError
+
+<br>
+
+- The following `handleError()` will be shared by many `HeroService` methods so it's generalized to meet their different needs.
+- Instead of handling the error directly, it returns an error handler function to `catchError` that it has configured with both the name of the operation that failed and a safe return value.
+
+~~~
+/**
+  Handle HTTP operation that failed.
+  Let the app continue.
+
+  @param operation - name of the operation that failed
+  @param result - optinal value to return as the observable result
+*/
+
+private handleError<T>(operation = 'operation', result?: T) {
+  return (error: any): Observable<T> => {
+    // TODO: send the error to remote logging infrastructure
+    console.error(error); // log to console instead
+
+    // TODO: better job of transforming error for user consumption
+    this.log(`${operation} failed: ${error.message}`);
+
+    // Let the app keep running by returning an empty result.
+    return of (result as T);
+  };
+}
+~~~
+
+- After reporting the error to the console, the handler constructs a user friendly message and returns a safe value to t he application so the application can keep working.
+- Because each service method returns a different kind of `Observable` result, `handleError()` takes a type parameter so it can return the safe value as the type that the application expects.
+
+<br>
+
+#### `Tap into the Observable`
+
+<br>
+
+- The `HeroService` methods will `tap` into the flow of observaable values and send a message, using the `log()` method, to the message area at the bottom of the page.
+- They'll do that with the RxJS `tap()` operator, which looks at the observable values, does something with those values, and passes them along.
+- The `tap()` call back doesn't touch the values themselves.
+- Here is the final version of `getHeroes()` with the `tap()` that logs the operation.
+
+~~~
+/** GET heroes from the server */
+getHeroes(): Observable<Hero[]> {
+  return this.http.get<Hero[]>(this.heroesUrl)
+    .pipe(
+      tap( _ => this.log('fetched heroes')),
+      catchError(this.handleError<Hero[]>('getHeroes', []))
+    );
+}
+~~~
 
 
 
