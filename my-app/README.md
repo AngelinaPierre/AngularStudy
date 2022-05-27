@@ -2153,5 +2153,184 @@ goBack(): void {
 <br>
 <hr>
 
-## `GET DATA FROM A SERVER`
+## ` 6 - Get data from a server`
+
+- In this tutorial, you'll add the following data persistence features with help from Angular's [HttpClient](https://angular.io/api/common/http/HttpClient)
+  - The `HeroService` get hero data with HTTP requests
+  - Users can add, edit, and delete heroes and save these changes over HTTP.
+  - Users can search for heroes by name.
+
+<br>
+<hr>
+
+### Enable HTTP services
+
+<br>
+
+- [HttpClient](https://angular.io/api/common/http/HttpClient) is Angular's mechanism for communicating with a remote server over HTTP.
+- Make [HttpClient](https://angular.io/api/common/http/HttpClient) available everywhere in the application in two steps.
+- First, add it to the root `AppModule` by importing it.
+
+~~~
+import { HttpClientModule } from '@angular/common/http';
+~~~
+
+- Next, still in `AppModule`, add [HttpClientModule](https://angular.io/api/common/http/HttpClientModule) to the `imports` array.
+
+~~~
+@NgModule({
+  imports: [
+    HttpClientModule,
+  ],
+})
+~~~
+
+<br>
+<hr>
+
+### Simulate data server
+
+<br>
+
+- This tutorial sample mimics communication with a remote data server by using the [in-memory Web API](https://github.com/angular/angular/tree/main/packages/misc/angular-in-memory-web-api) module.
+- After installing the module, the application will make requests to and receive responses from the [HttpClient](https://angular.io/api/common/http/HttpClient) without knowing that the `in-memory Web API` is intercepting those requests, applying them to an in-memory data store, and returning simulated responses.
+- By using the `in-memory Web API`, you won't have to set up a server to learn about [HttpClient](https://angular.io/api/common/http/HttpClient).
+
+> IMPORTANT
+> >
+> The in-memory Web API module has nothing to do with HTTP in Angular.
+> >
+> If you're reading this tutoria to learn about [HttpClient](https://angular.io/api/common/http/HttpClient), you can [skip over](https://angular.io/tutorial/toh-pt6#import-heroes) this step. If you're coding along with this tutorial, stay here and add the in-memory Web API now.
+
+- Install the in-memory Web API package from nom with the following command:
+
+~~~
+npm install angular-in-memory-web-api --save
+~~~
+
+- In the `AppModule`, import the `HttpClientInMemoryWebApiModule` and the `InMemoryDataService` class, which you will create in a moment.
+
+~~~
+import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
+import { InMemoryDataService } from './src/app/services/in-memory-datain-memory-data.service';
+~~~
+
+- After the [HttpClientModule](), add the `HttpClientInMemoryWebApiModule` to the `AppModule` `imports` array and configure it with the `InMemoryDataService`.
+
+~~~
+[app.module.ts]
+
+HttpClientModule,
+
+// The HttpClientInMemoryWebApiModule module intercepts HTTP requests and returns simulated server responses.
+// Remove it when a real server is ready to receive requests.
+HttpClientInMemoryWebApiModule.forRoot(
+  InMemoryDataService,
+  { dataEncapsulation: false},
+)
+~~~
+
+- The `forRoot()` configuration method takes an `InMemoryDataService` class that primes the in-memory database.
+- Generate the class `/src/app/service/in-memory-data/in-memory-data.service.ts` with the following command:
+
+~~~
+ng g service InMemoryData
+~~~
+
+- Replace the default contents of `in-memory-data.service.ts` with the following:
+
+~~~
+import { Injectable } from '@Angular/core';
+import { InMemoryDbService } from 'angular-in-memory-web-api';
+import { Hero } from './src/app/interfaces/hero.ts
+
+@Injectable({
+  providedIn: 'root',
+})
+
+export class InMemoryDataService implements InMemoryDbService {
+  createDb(){
+    const heroes = [
+      { id: 12, name: 'Dr. Nice' },
+      { id: 13, name: 'Bombasto' },
+      { id: 14, name: 'Celeritas' },
+      { id: 15, name: 'Magneta' },
+      { id: 16, name: 'RubberMan' },
+      { id: 17, name: 'Dynama' },
+      { id: 18, name: 'Dr. IQ' },
+      { id: 19, name: 'Magma' },
+      { id: 20, name: 'Tornado' }
+    ];
+    return {heroes};
+  }
+
+  // Overrides the genId method to ensure that a hero always has an id.
+  // If the heroes array is empty, the method below returns the initial number (11).
+  // If the heroes array is not empty, the method below returns the highest hero id + 1.
+  genId(heroes: Hero[]): number {
+    return heroes.length > 0 ? Math.max(...heroes.map(hero => hero.id)) + 1 : 11;
+  }
+}
+~~~
+
+- The `in-memory-data.service.ts` file will take over the function of `mock-heroes.ts`.
+- However, don't delete `mock-heroes.ts` yet, as you still need it for a few more steps of this tutorial.
+- When the server is ready, you'll detach the In-memory Web API, and the application's requests will go through to the server.
+
+<br>
+<hr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
