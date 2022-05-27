@@ -2347,8 +2347,25 @@ getHeroes(): Observable<Hero[]>{
 - The hero data should successfully load from the mock server.
 - You've swapped `of()` for `http.get()` and the application keeps working without any other changes because both functions return an `Observable<Hero[]>`
 
+<br>
 
+#### [HttpClient](https://angular.io/api/common/http/HttpClient) `methods return one value`
 
+<br>
+
+- All [HttpClient]() methods return an RxJS `Observable` of something.
+- HTTP is a request/response protocol.
+- You make a request, it returns a single response.
+- In general, an observable `can return` multiple values over time.
+- An observable from [HttpClient](https://angular.io/api/common/http/HttpClient) always emits a single value and the completes, never to emit again.
+- This particular [HttpClient.get()]() call returns an `Observable<Hero[]>`; that is, "`an observable of hero arrays`".
+- In practive, it will only return a single hero array.
+
+<br>
+
+#### [HttpClient.get()]() `returns response data`
+
+<br>
 
 
 
