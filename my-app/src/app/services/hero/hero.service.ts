@@ -97,6 +97,15 @@ export class HeroService {
         catchError(this.handleError<any>('updateHero'))
       )
   }
+  addHero(hero: Hero): Observable<Hero> {
+    return this.http.post<Hero>(this.heroesUrl,hero,this.httpOptions)
+      .pipe(
+        tap(
+          (newHero: Hero) => this.log(`added hero w/id=${newHero.id}`)
+        ),
+        catchError(this.handleError<Hero>('addHero'))
+      );
+  }
 
   // getHero(id: number): Observable<Hero> {
   //   // For now, assume that a hero with the specified `id` always exists.
@@ -105,5 +114,7 @@ export class HeroService {
   //   this.messageService.add(`HeroService: fetched hero id=${id}`);
   //   return of(hero);
   // }
+
+
 
 }

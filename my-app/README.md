@@ -2574,9 +2574,72 @@ httpOptions = {
 
 <br>
 
+- To add a hero, this application only needs the hero's name.
+- You can use an `<input>` element paired with an add button.
+- Insert the following into the `HeroesComponent` template, after the heading:
 
+~~~
+<div>
+  <label for="new-hero">Hero name: </label>
+  <input id="new-hero" #heroName />
 
+  <!-- (click) passes input value to add() and the clears the input -->
 
+  <button 
+    type="button"
+    class="add-button"
+    (click)="add(heroName.value); heroName.valie=''"
+  >Add Hero</button>
+</div>
+~~~
+
+In response to a click event, call the component's click handler, `add()`, and then clear the input field so that it's ready for another name.
+Add the following tot he `HeroesComponent` class:
+
+~~~
+add(name: string): void {
+  name = name.trim();
+  if(!name){
+    return;
+  }
+  this.heroService.addHero({name} as Hero)
+    .subscribe(hero =>> {
+      this.heroes.push(hero);
+    });
+}
+~~~
+
+- When the given name is non-blank, the handler creates a `Hero`-like object from the name (it's only missing the `id`) and passes it to the services `addHero()` method.
+- When `addHero()` saves successfully, the `subscrive()` callback receives the new hero and push it into to the `heroes` list for display.
+- Add the following `addHero()` method to the `HeroService` class.
+
+~~~
+/** POST: add a new hero to the server */
+addHero(hero: Hero) : Observable<Hero> {
+  return this.http.post<Hero>(this.heroesUrl, hero, this.httpOptions)
+    .pipe(
+      tap((newHero: Hero) => this.log(`added hero w/id=${newHero.id}`)),
+      catchError(this.handleError<Hero>('addHero'))
+    );
+}
+~~~
+
+- `addHero()` differs from `updateHero()`in two ways:
+  - It calls [HttpClient.post()] instead of `put()`
+  - It expects the server to generate an id for the new hero, which it returns in the `Observable<Hero>` to the caller.
+- Refresh the browser and add some heroes.
+
+#### `Steps` 
+1) Create a `hero service method` to add a hero.
+2) Create a `hero add method` in the `HeroesComponent` class.
+3) Add the a input and button to the `HeroesComponent` template, with a (click) event.
+
+<br>
+<hr>
+
+### Delete a Hero
+
+<br>
 
 
 
