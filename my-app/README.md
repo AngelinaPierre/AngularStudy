@@ -2640,12 +2640,72 @@ addHero(hero: Hero) : Observable<Hero> {
 ### Delete a Hero
 
 <br>
+- Each hero in the heroes list should have a delete button.
+- Add the following button element to the `HeroesComponent` template, after the hero name in the repeated `<li>` element.
 
+~~~
+<button type="button" class="delete" title="delete hero" (click)="delete(hero)">X</button>
+~~~
 
+- The HTML for the list of heroes should look like this:
 
+~~~
+<ul class="heroes">
+  <li *ngFor="let hero of heroes">
+    <a routerLink="/detail/{{hero.id}}>
+      <span class="badge">{{hero.id}}</span>{{hero.name}}
+    </a>
+    <button type="button" class="delete" title="delete hero" (click)="delete(hero)">X</button>
+  </li>
+</ul>
+~~~
 
+- To position the delete button at the far right of the hero entry, add some CSS to the `heroes.component.css`.
+- You'll find that CSS in the [fina review code](https://angular.io/tutorial/toh-pt6#heroescomponent) below.
+- Add the `delete()` handler to the component class.
 
+~~~
+[heroes.component.ts](delete)
 
+delete(hero: Hero): void {
+  this.heroes = this.heroes.filter( h => h !== hero);
+  this.heroService.delete(hero.id)
+    .subscribe();
+}
+~~~
+
+- Although the component delegates hero deletion to the `HeroService`, it remains responsible for updating its own list of heroes.
+- The component's `delete()` method immediately removes the `hero-to-delete` from that list, anticipating that the `HeroService` will succeed on the server.
+- There's really nothing for the component to do with the `Observlabe` returned by `HeroService.deleteHero() but it must subscribe anyway.`
+
+> If you neglect to `subscribe()`, the service will not send the delete request to the server. As a rule, an `Onservable` does nothing until something subscribes.
+> >
+> Confirm this for yourself by temporarily removing the `subscribe()`, clicking "DashBoard", the clicking "Heroes". You'll see the full list of heroes again.
+
+- Next, add a `deleteHero()` method to `HeroService` like this:
+
+~~~
+/** DELETE: delete the hero from the server */
+deleteHero(id: number): Observable<Hero> {
+  const url = `${this.heroesUrl}/${id}`;
+
+  return this.http.delete<Hero>(url, this.httpOptions)
+    .pipe(
+      tap(_ -> this.log(`deleted hero id=${id}`)),
+      catchError(this.handleError<Hero>('deleteHero'))
+    );
+}
+~~~
+
+- Notice the following key points:
+  - `deleteHero()` calls [httpClient.delete()](https://angular.io/api/common/http/HttpClient#delete)
+  - The URL is the heroes resource URL plus the `id` of hero to delete.
+  - You don't send data as you did with `put()` and `post()`
+  - You still send the `httpOptions`
+- Refresh the browser and try the new delete functionality.
+
+<br>
+<hr>
 
 
 
