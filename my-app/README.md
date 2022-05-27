@@ -2465,6 +2465,37 @@ getHeroes(): Observable<Hero[]> {
 }
 ~~~
 
+<br>
+
+#### `Get hero by id`
+
+<br>
+
+- Most web APIs support a `get by id` request in the form `:baseURL/:id`.
+- Here, the `base URL` is the `heroesURL` defined in the [Heroes and HTTP]() section (`api/heroes`) and `id` is the number of the hero that you want to retrive.
+- For example, `api/heroes/11`.
+- Update the `heroService getHero()` method with the following to make that request:
+
+~~~
+/** GET hero by id. Will 404 if id not found */
+getHero(id:number): Observable<Hero> {
+  const url = `${this.heroesUrl}/${id}`;
+  return this.http.get<Hero>(url)
+    .pipe(
+      tap( _ => this.log(`fetched hero id=#{id}`)),
+      catchError(this.handleError<Hero>(`getHero id=${id}))
+    );
+}
+~~~
+
+- There are three significant differences from `getHeroes()`:
+  - `getHero()` constructs a request URL with the desired hero's id.
+  - The server should respond with a single hero rather than an array of heroes.
+  - `getHero()` returns an `Observable<Hero>` ("an observable of Hero objects") rather than an observable of hero arrays.
+
+<br>
+<hr>
+
 
 
 
