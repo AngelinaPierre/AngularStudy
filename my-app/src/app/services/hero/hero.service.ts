@@ -11,6 +11,12 @@ import { catchError, map, tap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class HeroService {
+  private heroesUrl = 'api/heroes'; // URL to web api
+  httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json',
+    })
+  };
 
   constructor(
     private http: HttpClient,
@@ -20,7 +26,7 @@ export class HeroService {
   private log(message: string) {
     this.messageService.add(`HeroService: ${message}`);
   }
-  private heroesUrl = 'api/heroes'; // URL to web api
+
 
   // methods
 
@@ -79,6 +85,13 @@ export class HeroService {
       );
   }
 
+  updateHero(hero: Hero): Observable<any> {
+    return this.http.put(this.heroesUrl, hero, this.httpOptions)
+      .pipe(
+        tap( _ => this.log(`updated hero id=${hero.id}`)),
+        catchError(this.handleError<any>('updateHero'))
+      )
+  }
 
   // getHero(id: number): Observable<Hero> {
   //   // For now, assume that a hero with the specified `id` always exists.

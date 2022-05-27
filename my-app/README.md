@@ -2496,12 +2496,79 @@ getHero(id:number): Observable<Hero> {
 <br>
 <hr>
 
+### Update heroes
+<br>
 
+- Edit a hero's name in the hero detail view. 
+- As you type, the hero name updates the heading at the top of the page.
+- But when you click the "go back button", the changes are lost.
+- If you want changes to persist, you must write them back to the server.
+- At the end of the hero detail template, add a save button with a `click` event binding that invokes a new component method nameed `save()`.
 
+~~~
+<button type="button" (click)="save()">save</button>
+~~~
 
+- In the `HeroDetail` component class, add the following `save()` method, which persists hero name changes using the hero service `updateHero()` method and then navigates back to the previous view.
 
+~~~
+[hero-detail.component.ts]
 
+save(): void {
+  if(this.hero){
+    this.heroService.updateHero(this.hero)
+      .subscribe(() => this.goBack());
+  }
+}
+~~~
 
+<br>
+
+#### Add HeroService.updateHero()
+
+<br>
+
+- The overall structure of the `updateHero()` method is similar to that of `getHeroes()`, but it uses `http.put()` to persist the changed hero on the server.
+- Add the following to the `HeroService`.
+
+~~~
+/** PUT: update the hero on the server */
+
+updateHero(hero: Hero): Observable<any> {
+  return this.http.put(this.heroesUrl, hero, this.httpOptions)
+    .pipe(
+      tap( _ => this.log(`updated hero id=${id}`)),
+      catchError(this.handleError<any>('updateHero'))
+    );
+}
+~~~
+
+- The [HttpClient.put()](https://angular.io/api/common/http/HttpClient#put) method takes three parameters:
+  - The URL
+  - The data to update (the modified hero in this case)
+  - Options
+- The URL is unchanged.
+- The heroes web API knows which hero to update by looking at the hero's `id`.
+- The Heroes web API expects a special header in HTTP save requests.
+- That header is in the `httpOptions` constant defined in the `HeroService`.
+- Add the following to the `HeroService` class
+
+~~~
+[hero.service.ts]
+
+httpOptions = {
+  headers: new HttpHeaders({
+    'Content-Type': 'applicaton/json'
+  })
+};
+~~~
+
+- Refresh the browser, change a hero name and save your change.
+- The `save()` method in `HeroDetailComponent` navigates to the previous view.
+- The hero now appears in the list with the changed name.
+
+<br>
+<hr>
 
 
 

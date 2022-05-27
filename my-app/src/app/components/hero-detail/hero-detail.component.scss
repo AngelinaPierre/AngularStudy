@@ -6,6 +6,7 @@ label {
 input {
   font-size: 1em;
   padding: .5rem;
+  background-color: #cfd8dc;
 }
 button {
   margin-top: 20px;
@@ -21,4 +22,9 @@ button:disabled {
   background-color: #eee;
   color: #ccc;
   cursor: auto;
+}
+
+span{
+  color: #435960;
+  font-weight: bold;
 }
