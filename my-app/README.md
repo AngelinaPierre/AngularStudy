@@ -2570,6 +2570,11 @@ httpOptions = {
 <br>
 <hr>
 
+### Add a new Hero
+
+<br>
+
+
 
 
 

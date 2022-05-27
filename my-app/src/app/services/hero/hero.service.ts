@@ -11,6 +11,7 @@ import { catchError, map, tap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class HeroService {
+
   private heroesUrl = 'api/heroes'; // URL to web api
   httpOptions = {
     headers: new HttpHeaders({
@@ -21,7 +22,7 @@ export class HeroService {
   constructor(
     private http: HttpClient,
     private messageService: MessageService,
-  ) { }
+  ) { console.log('HeroService Constructor');}
   /** Log a HeroService message with the MessageService */
   private log(message: string) {
     this.messageService.add(`HeroService: ${message}`);
@@ -51,6 +52,7 @@ export class HeroService {
 
   // GET heroes from the server
   getHeroes(): Observable<Hero[]> {
+    console.log('HeroService getHeroes()');
     return this.http.get<Hero[]>(this.heroesUrl)
       .pipe(
         tap( _ => this.log('fetched heroes')),
@@ -64,6 +66,7 @@ export class HeroService {
   // @param result - optional value to return as the observable result
 
   private handleError<T>(operation = 'operation', result?: T) {
+    console.log('HeroService handleError');
     return (error: any): Observable<T> => {
       // TODO: send the error to remote logging infrastructure
       console.error(error); // log to console instead
@@ -77,6 +80,7 @@ export class HeroService {
   }
 
   getHero(id: number): Observable<Hero> {
+    console.log('HeroService getHero(id)');
     const url = `${this.heroesUrl}/${id}`;
     return this.http.get<Hero>(url)
       .pipe(
@@ -86,6 +90,7 @@ export class HeroService {
   }
 
   updateHero(hero: Hero): Observable<any> {
+    console.log(`HeroService updateHero(${hero.id})`);
     return this.http.put(this.heroesUrl, hero, this.httpOptions)
       .pipe(
         tap( _ => this.log(`updated hero id=${hero.id}`)),
