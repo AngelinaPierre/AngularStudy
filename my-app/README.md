@@ -2280,12 +2280,72 @@ export class InMemoryDataService implements InMemoryDbService {
 <br>
 <hr>
 
+### Heroes and HTTP
 
+<br>
 
+- In the `HeroService`, import [HttpClient](https://angular.io/api/common/http/HttpClient) and [HttpHeaders](https://angular.io/api/common/http/HttpHeaders):
 
+~~~
+[hero.service.ts]
 
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+~~~
 
+- Still in the `HeroService`, inject [HttpClient](https://angular.io/api/common/http/HttpClient) into the constructor in a private property called [http](https://angular.io/api/common/http).
 
+~~~
+constructor({
+  private http: HttpClient,
+  private messageService: MessageService,
+})
+~~~
+
+- Notice that you keep injecting the `MessageService` but since you'll call it so frequently, wrap it in a private `logig()` method:
+
+~~~
+/** Log a HeroService message with the MessageService */
+private log(message: string){
+  this.messageService.add(`HeroService: ${message}`);
+}
+~~~
+
+- Define the `HeroesUrl` of the form `:base/:collectionName` with the address of the heroes resource on the server.
+- Here `base` is the resource to which requests are made, and `collectionName` is the heroes data object in the `in-memory-data.service.ts`.
+
+~~~
+private heroesURL = 'api/heroes'; // URL to web api
+~~~
+
+<br>
+
+#### `Get heroes with `[HttpClient](https://angular.io/api/common/http/HttpClient)
+
+<br>
+
+- The current `HeroService.getHeroes()` uses the RxJS `of()` function to return an array of mock heroes as an `Observable<Hero[]>`
+
+~~~
+[hero.service.ts](getHeroes with RxJS'of()')
+
+getHeroes(): Observable<Hero[]> {
+  const heroes = of(HEROES);
+  return heroes;
+}
+~~~
+
+- Convert that method to use [HttpClient](https://angular.io/api/common/http/HttpClient) as follows:
+
+~~~
+/** GET heroes from the server */
+getHeroes(): Observable<Hero[]>{
+  return this.http.get<Hero[]>(this.heroesUrl)
+}
+~~~
+
+- Refresh the browser.
+- The hero data should successfully load from the mock server.
+- You've swapped `of()` for `http.get()` and the application keeps working without any other changes because both functions return an `Observable<Hero[]>`
 
 
 
