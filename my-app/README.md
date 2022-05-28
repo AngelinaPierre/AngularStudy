@@ -2707,12 +2707,291 @@ deleteHero(id: number): Observable<Hero> {
 <br>
 <hr>
 
+### Search by name
+
+<br>
+
+- In this last exercise, you learn to chain `Observable` operators together so you can minimize the number of similiar HTTP requests and consume network bandwidth economically.
+- You will add heroes search feature to the Dashboard.
+- As the user types a name into a search box, you'll make repeated HTTP requests for heroes filtered by that name.
+- Your goal is to issue only as many requests as necessary.
+
+<br>
+
+#### `heroService.searchHeroes()`
+
+<br>
+
+- Start by adding a `searchHeroes()` method to the `HeroService`.
+
+~~~
+/* GET heroes whose name contains search term */
+searchHeroes(term: string): Observable<Hero[]> {
+  if(!term.trim()) {
+    // if not search term, return empty hero array.
+    return of([]);
+  }
+  return this.http.get<Hero[]>(`${this.heroesUrl}/?name=${term}`)
+    .pipe(
+      tap(
+        x => x.length ?
+        this.log(`found heroes matching "${term}"`);
+        this.log(`no heroes matching "${term}"`)
+      ),
+      catchError(this.handleError<Hero[]>('searchHeroes', []))
+    );
+}
+~~~
+
+- The method returns immediately with an empty array if there is no search term.
+- The rest of it closely resembles `getHeroes()`, the only significant difference being the URL, which includes a query string with the search term.
+
+<br>
+
+#### `Add search to the Dashboard`
+
+<br>
+
+- Open the `DashboardComponent` template and add the hero search element, `<app-hero-search>`, to the bottom of the markup.
+
+~~~
+<h2>Top Heroes</h2>
+<div class="heroes-menu">
+  <a *ngFor="let hero of heroes" routerLink="/detail/{{hero.id}}">{{hero.name}}</a>
+</div>
+
+<app-hero-search></app-hero-search>
+~~~
+
+- This template looks a lot like the [*ngFor]() repeater in the `HeroesComponent` template.
+- For this to work, the next step is to add a component with a selector that matches `<app-hero-search>`
+
+<br>
+
+#### `Create HeroSearchComponent`
+
+<br>
+
+- Create a `HeroSearchComponent` with the CLI.
+
+~~~
+ng g component hero-search
+~~~
+
+- The CLI generates the three `HeroSearchComponent` files and adds the component to the `AppModule` declarations.
+- Replace the generated `HeroSearchComponent` template with an `<input>` and a list of matching search results, as follows:
+
+~~~
+[hero-search.component.html]
+
+<div id="search-component">
+  <label for="search-box">Hero Search</label>
+  <input #searchBox id="search-box" (input)="search(searchBox.value)" />
+
+  <ul class="search-result">
+    <li *ngFor="let hero of heroes$ | async" >
+      <a routerLink="/detail/{{hero.id}}">
+        {{hero.name}}
+      </a>
+    </li>
+  </ul>
+</div>
+~~~
+
+- Add private CSS styles to `hero-search.component.css` as listed in the [final code review]() below.
+- As the user types in the search box, an input event binding calls the component's `search()` method with the new search box value.
+
+<br>
+
+#### [AsyncPipe]
+
+<br>
+
+- The [*ngFor]() repeats hero objects.
+- Notice that the [*ngFor]() iterates over a list called `heroes$`, not `heroes`.
+- The `$` is a convention that indicates `heroes$` is an `Observable`, not an array.
+
+~~~
+[hero-search.component.html]
+
+<li *ngFor="let hero of heroes$ | async" >
+~~~
+
+- Since [*ngFor]() can't do anything with an `Observable`, use the pipe(`|`) character followed by [async](). This identifies Angular's [AsyncPipe]() and subscribes to an `Observable` automatically so you won't have to do so in the component class.
+
+<br>
+
+#### `Edit the HeroSearchComponentClass`
+
+<br>
+
+- Replace the generated `HeroSearchComponent` class and metadata as follows:
+
+~~~
+import { Component, OnInit } from '@angular/core';
+
+import { Observable, Subject } from 'rxjs';
+
+import {
+  debounceTime, distinctUntilChanged, switchMap
+} from 'rxjs/operators';
+
+import { Hero } from './src/app/interfaces/hero.ts';
+import { HeroService } from './src/app/services/hero/hero.service.ts';
+
+@Component({
+  selector: 'app-hero-search',
+  templateUrl: './hero-search-component.html',
+  styleUrls: ['./hero-search.component.css' ]
+})
+
+export class HeroSearchComponent implements OnInit {
+  heroes$!: Observable<Hero[]>;
+  private searchTerms = new Subject<string>();
+
+  constructor(
+    private heroService: heroService
+  ){}
+
+  // Push a search term into te observable stream.
+  search(term: string): void {
+    this.searchTerms.next(term);
+  }
+
+  ngOnInit(): void {
+    this.heroes$ = this.searchTerms.pipe(
+      // wait 300ms after each keystroke before considering the term
+      debounceTime(300),
+
+      // ignore new term if same as previous term
+      distinctUntilChanged(),
+
+      // switch to new search observable each time the term changes.
+      switchMap(
+        (term: string)
+      )
+    )
+  }
+}
+~~~
+
+- Notice the declaration of `heroes$` as an `Observable`:
+
+~~~
+heroes$!: Observable<Hero[]>;
+~~~
+
+- You'll set in [ngOnInit](https://angular.io/tutorial/toh-pt6#search-pipe).
+- Before you do, focus on the definitin of `searchTerms`
+
+<br>
+
+#### `The searchTerms RxJS subject`
+
+<br>
+
+- The `searchTerms` property is an RxJS `Subject`.
+
+~~~
+[hero-search.component.ts]
+
+private searchTerms = new SUbject<string>();
+
+// Push a search term into the observable stream.
+search(term:string): void {
+  this.searchTerms.next(term);
+}
+~~~
+
+- A `Subject`is both a source of observable values and an `Observable` itself.
+- You can subscribe to a `Subject` as you would any `Observable`
+- You can also push values into that `Observable` by calling its `next(value)` method as the `search()` method does.
+- The event binding to the textbox's `input` event calls the `search()` method.
+
+~~~
+<input #searchBox id="search-box" (input)="search(searchBox.value)" />
+~~~
+
+- Every time the user types in the textbox, the binding calls `search()` with the textbox value, a "search term".
+- The `searchTerm` becomes an `Observable` emitting a steady stream of search terms.
+
+<br>
+
+#### `Chaining RxJS operators` 
+
+<br>
+
+- Passing a new search term directly to the `searchHeroes()` after every user keystroke would create an excessive amount of HTTP requests, taxiing servver resources and burning through data plans.
+- Insteaad, the `ngOnInit()` method pipes the `searchTerm` observable through a sequence of RxJS operators that reduce the number of calls to the `searchHeroes()`, ultimately returning an observable of timely hero search results (eaaach a hero[]).
+- Here's a closer look at the code:
+
+~~~
+[hero-search.component.ts]
+
+this.heroes$ = this.searchTerms.pipe(
+  // wait 300ms after each keystroke before considering the term
+  debouncedTime(300),
+
+  // ignore new term if same as previous term
+  distinctUnitChanged(),
+
+  // switch to new search observable each time the term changes.
+  switchMap(
+    (term: string) => this.heroesService.searchHeroes(term)
+  ),
+);
+~~~
+
+- Each operator works as follows:
+  - `debounceTime(300)` waits until flow of new string events pauses for 300 miliseconds before passing along the lastest string. You'll never make requests more frequently than 300ms.
+  - `distinctUntilChanged()` ensures that a request is sent only if the filter text changed.
+  - `switchMap()` calss the search service for each search term that makes it through `debounce()` and `distinctUntilChanged()`. It cancels and discards previous search observables, returning only the latest search service observable.
+
+> With the [switchMap operator](https://www.learnrxjs.io/learn-rxjs/operators/transformation/switchmap), every qualifying key event can trigger an [HttpClient.get()](https://angular.io/api/common/http/HttpClient#get) method call. Even with a 300ms pause between requests, you could have multiple HTTP requests in flight and they may not return in the order sent.
+> >
+> `switchMap()` preserves the original request order while returning only the observable from the most recent HTTP method call. Results from prior calls are canceled and discarded.
+
+> Note:
+> >
+> Canceling a previous `searchHeroes()`Observable doesn't actually abort a pending HTTP request. Unwanted results are discarded before they reach your application code.
+
+<br>
+
+- Remember that the component `class` does not subscribe to the `heroes$ observable`. 
+- That's the job of the [AsyncPipe](https://angular.io/tutorial/toh-pt6#asyncpipe) in the template.
 
 
+<br>
+
+#### `Try it`
+
+<br>
+
+- Run the application again.
+- In the `Dashboard`, enter some text in the search box.
+- If you enter characters that match any existing hero anmes, you'll see something like this:
+
+![](./src/assets/Capture5.PNG)
 
 
+<br>
+<hr>
 
+### Summary
 
+<br>
+
+- You're at the end of your journey, and you've accomplished a lot.
+  - You added the necessary dependencies to use HTTP in the app
+  - You refactored `HeroService` to load heroes from a web API.
+  - You extended `heroService` to support `post()`,`put()`, and `delete()` methods.
+  - You updated the components to allow adding, editing, and deleting of heroes.
+  - You configured an in-memory web API
+  - You learned how to use observables.
+
+<br>
+
+This cncludes the "Tour of Heroes" tutorial. You're ready to learn more about Angular development in the fundamentals section, starting with the [Architecture](https://angular.io/guide/architecture) guide
 
 
 
