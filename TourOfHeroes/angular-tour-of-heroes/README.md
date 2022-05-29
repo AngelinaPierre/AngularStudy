@@ -237,6 +237,15 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 - The PUT method replaces an existing resource with a new set of values. 
 - See the individual overloads for details on the return type.
 
+### HttpClient.post()
+- Constructs an observable that, when subscribed, causes the configured POST request to execute on the server. 
+- The server responds with the location of the replaced resource. 
+- See the individual overloads for details on the return type.
+
+### HttpClient.delete()
+- Constructs an observable that, when subscribed, causes the configured DELETE request to execute on the server. 
+- See the individual overloads for details on the return type.
+
 <br>
 <hr>
 
@@ -258,6 +267,41 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## [21] Rxjs library
 - RxJS is a library for reactive programming using Observables, to make it easier to compose asynchronous or callback-based code. - This project is a rewrite of Reactive-Extensions/RxJS with better performance, better modularity, better debuggable call stacks, while staying mostly backwards compatible, with some breaking changes that reduce the API surface
+
+### RxJS operators
+
+- Passing a new search term directly to the searchHeroes() after every user keystroke would create an excessive amount of HTTP requests, taxing server resources and burning through data plans.
+- Instead, the ngOnInit() method pipes the searchTerms observable through a sequence of RxJS operators that reduce the number of calls to the searchHeroes(), ultimately returning an observable of timely hero search results (each a Hero[]).
+
+#### debounceTime(300)
+-Waits until the flow of new string events pauses for 300 milliseconds before passing along the latest string. 
+- You'll never make requests more frequently than 300ms.
+
+#### distinctUntilChanged() 
+- Ensures that a request is sent only if the filter text changed.
+
+#### switchMap() 
+- Calls the search service for each search term that makes it through debounce() and distinctUntilChanged(). It cancels and discards previous search observables, returning only the latest search service observable.
+- The main difference between switchMap and other flattening operators is the cancelling effect. 
+- On each emission the previous inner observable (the result of the function you supplied) is cancelled and the new observable is subscribed. 
+- You can remember this by the phrase switch to a new observable.
+- This works perfectly for scenarios like typeaheads where you are no longer concerned with the response of the previous request when a new input arrives. 
+- This also is a safe option in situations where a long lived inner observable could cause memory leaks, for instance if you used mergeMap with an interval and forgot to properly dispose of inner subscriptions. 
+- Remember, switchMap maintains only one inner subscription at a time, this can be seen clearly in the first example.
+- Be careful though, you probably want to avoid switchMap in scenarios where every request needs to complete, think writes to a database. 
+- switchMap could cancel a request if the source emits quickly enough. 
+- In these scenarios mergeMap is the correct option.
+
+> With the switchMap operator, every qualifying key event can trigger an HttpClient.get() method call. Even with a 300ms pause between requests, you could have multiple HTTP requests in flight and they may not return in the order sent.
+> >
+> switchMap() preserves the original request order while returning only the observable from the most recent HTTP method call. Results from prior calls are canceled and discarded.
+
+<br>
+
+### RxJS Subject
+- A Subject is both a source of observable values and an Observable itself.
+- You can subscribe to a Subject as you would any Observable.
+- You can also push values into that Observable by calling its next(value) method.
 
 <br>
 <hr>
@@ -340,11 +384,23 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 <br>
 <hr>
 
-## In memory web API
+## [26] In memory web API
 - An in-memory web api for Angular demos and tests that emulates CRUD operations over a RESTy API.
 - It intercepts Angular Http and HttpClient requests that would otherwise go to the remote server and redirects them to an in-memory data store that you control.
+- The async pipe subscribes to an Observable or Promise and returns the latest value it has emitted. 
+- When a new value is emitted, the async pipe marks the component to be checked for changes. 
+- When the component gets destroyed, the async pipe unsubscribes automatically to avoid potential memory leaks. 
+- When the reference of the expression changes, the async pipe automatically unsubscribes from the old Observable or Promise and subscribes to the new one.
+
+> Notes from tutorial:
+> >
+> Since *ngFor can't do anything with an Observable, use the pipe (|) character followed by async. This identifies Angular's AsyncPipe and subscribes to an Observable automatically so you won't have to do so in the component class.
+
 <br>
 <hr>
+
+## [27] AsyncPipe
+- Unwraps a value from an asynchronous primitive.
 
 <br>
 <hr>
