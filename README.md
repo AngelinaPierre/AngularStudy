@@ -3374,12 +3374,126 @@ This cncludes the "Tour of Heroes" tutorial. You're ready to learn more about An
 <hr>
 
 
+============================== BUILDING A TEMPLATE-DRIVEN FORM (tutorial) ==============================
+
+<br>
+
+- This tutorial show you how to create a template-driven form whose control elements are bound to data properties, with input validation to maintain data integrity and styling to improve the user experience.
+- Template-driven forms use [two-way data binding]() to update the data model in the component as changes are made in the template and vice versa.
+
+> Angular supports two design approaches for interactive forms. You can build forms by writing templates using Angular template syntax and directives with the form-specific directives and techniques described in this tutorial, or you can use a reactive (or model-driven) approach to build forms.
+>
+> Template-driven forms are suitable for small or simple forms, while reactive forms are more scalable and suitable for complex forms. For a comparison of the two approaches, see Introduction to Forms
+
+<br>
+
+- You can build almost any kind of form with an Angular template - login forms, contact forms, and pretty much any business form.
+- You can lay out the controls creatively and bind them to the data in your object model.
+- You can specify validation rules and display validation errors
+- Conditionally enable or disable specific controls
+- Trigger built-in visual feedback, and much more.
+
+This tutorial shows you how to build a form from scratch, using a simplified sample form like the one from the [Tour of Heroes](https://angular.io/tutorial) tutorial to illustrate the techniques.
+
+<br>
+<hr>
+
+## Objectives
+
+- This tutorial teaches you how to do the following:
+  - Build an Angular form with a component and template
+  - Use [ngModel](https://angular.io/api/forms/NgModel) to create two-way data bindings for reading and writing input-control values.
+  - Provide visual feedback using special CSS classes that track the state of the controls.
+  - Display validation errors to users and enable or disable form controls based on the form status.
+  - Share information across HTML elements using [template reference variables](https://angular.io/guide/template-reference-variables)
+
+
+<br>
+<hr>
+
+## Prerequires
+
+- Before going further into template-driven forms, you should have a basic understanding of the following.
+  - [TypeScript](https://www.typescriptlang.org/) and HTML5 programming
+  - Angular app-design fundamentals, as described in [Angular Concepts](https://angular.io/guide/architecture)
+  - The basics of [Angular template syntax](https://angular.io/guide/template-syntax)
+  - The form-design concepts that are presented in [Introduction to Forms](https://angular.io/guide/forms-overview)
+
+<br>
+<hr>
+
+## Build a template-driven form
+
+<br>
+
+- Template-driven forms rely on directives defined in the [FormsModule](https://angular.io/api/forms/FormsModule).
+  - [NgModel](https://angular.io/api/forms/NgModel)
+    - Reconciles value changes in the attached form element with changes in the data model, allowing you to respond to user input with input validation and error handling.
+  - [NgForm](https://angular.io/api/forms/NgForm)
+    - Creates a top-level [FormGroup](https://angular.io/api/forms/FormGroup) instance and binds it to a `<form>` element to track aggregated form value and validation status. As soon as you import [FormsModule](https://angular.io/api/forms/FormsModule), this directive becomes active by default on all `<form>` tags. You don't need to add a special selector.
+  - [NgModelGroup](https://angular.io/api/forms/NgModelGroup)
+    - Creates and binds a [FormGroup](https://angular.io/api/forms/FormGroup) instance to a DOM element.
 
 
 
+<br>
+<hr>
+
+### The sample application
+
+<br>
+
+- The sample form in this guide is used by the Hero Employment Agency to maintain personal information about heroes. 
+- Every hero needs a job. 
+- This form helps the agency match the right hero with the right crisis.
+
+![](./TourOfHeroes//angular-tour-of-heroes//src//assets/Capturar1.PNG)
+
+<br>
 
 
+- The form highlights some design features that make it easier to use.
+- For instance, the two required fields have a green bar on the left to make them easy to spot.
+- These fields have initial values, so the form is valide and the `Submit` button is enabled.
+- As you work with this form, you will learn how to include validation logic, how to customize the presentation with standard CSS, and how to handle error conditions to ensure valid input.
+- If the user deletes the hero name, for example, the form becomes invalid.
+- The application detects the changed status, and displays a validation error in an attention-grabbing style.
+- In addtion, the `Submit` button is disabled, and the "required" bar to the left of the input control changes from green to red.
 
+![](./TourOfHeroes//angular-tour-of-heroes//src//assets/Capturar2.PNG)
+
+<br>
+
+### Step overview
+
+<br>
+
+In the course of this tutorial, you bind a sample form to data and handle user input using the following steps:
+
+1) Build the basic form.
+   -  Define a sample data model
+   -  Include required infrastructure such as the [FormsModule](https://angular.io/api/forms/FormsModule)
+2) Bind form controls to data properties using the [ngModel](https://angular.io/api/forms/NgModel) directive and two-way data binding syntax.
+  - Examine how [ngModel](https://angular.io/api/forms/NgModel) reports control states using CSS classes
+  - Name controls to make them accessible to [ngModel](https://angular.io/api/forms/NgModel)
+3) Track input validity and control status using [ngModel](https://angular.io/api/forms/NgModel)
+   - Add custom CSS to provide visual feedback on the status
+   - Show and hide validation-error messages
+4) Respond to a native HTML button-click event by adding to the model data.
+5) Handle form submission using the [ngSubmit]() output property of the form.
+   - Disable the `Submit` button until the form is valid
+   - After submit, swap out the finished form for different content on the page.
+
+<br>
+<hr>
+
+## Build the form
+  
+
+<br>
+<hr>
+
+## Bind input controls to data properties
 
 
 
