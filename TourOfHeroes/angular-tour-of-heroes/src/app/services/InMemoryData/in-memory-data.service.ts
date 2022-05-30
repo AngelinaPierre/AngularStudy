@@ -8,15 +8,60 @@ import { Hero } from 'src/app/interfaces/hero';
 export class InMemoryDataService implements InMemoryDbService {
   createDb() {
     const heroes = [
-      { id: 12, name: 'Dr. Nice' },
-      { id: 13, name: 'Bombasto' },
-      { id: 14, name: 'Celeritas' },
-      { id: 15, name: 'Magneta' },
-      { id: 16, name: 'RubberMan' },
-      { id: 17, name: 'Dynama' },
-      { id: 18, name: 'Dr. IQ' },
-      { id: 19, name: 'Magma' },
-      { id: 20, name: 'Tornado' }
+      {
+        id: 12,
+        name: 'Dr. Nice',
+        power:'Really Smart' ,
+        alterEgo:'Maria Alice' ,
+      },
+      {
+        id: 13,
+        name: 'Bombasto',
+        power:'Super Flexible' ,
+        alterEgo:'Duarte Isis' ,
+      },
+      {
+        id: 14,
+        name: 'Celeritas',
+        power:'Really Smart' ,
+        alterEgo:'Santa Kaya' ,
+      },
+      {
+        id: 15,
+        name: 'Magneta',
+        power:'Weather Changer' ,
+        alterEgo:'Olívia Yuri' ,
+      },
+      {
+        id: 16,
+        name: 'RubberMan',
+        power:'Super Flexible' ,
+        alterEgo:'Catarina Laís' ,
+      },
+      {
+        id: 17,
+        name: 'Dynama',
+        power:'' ,
+        alterEgo:'Bianca Sabrina' ,
+      },
+      {
+        id: 18,
+        name: 'Dr. IQ',
+        power:'Really Smart' ,
+        alterEgo:'Muriel Melissa' ,
+      },
+      {
+        id: 19,
+        name: 'Magma',
+        power:'Super Hot' ,
+        alterEgo:'Milene Isaac' ,
+      },
+      {
+        id: 20,
+        name: 'Tornado',
+        power:'Weather Changer' ,
+        alterEgo:'Aurora Mariana' ,
+      },
     ];
     return {heroes};
   }
