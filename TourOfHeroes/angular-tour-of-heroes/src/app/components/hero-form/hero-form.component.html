@@ -41,7 +41,7 @@
           <option *ngFor="let pow of powers" [value]="pow">{{pow}}</option>
         </select>
       </div>
-      <button type="button" class="btn btn-default" (click)="add()">Add Hero</button>
+      <button type="button" class="btn btn-default" (click)="add(heroForm.value)">Add Hero</button>
     </form>
 
   </div>

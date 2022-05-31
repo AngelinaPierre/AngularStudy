@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Hero } from 'src/app/interfaces/hero';
 import { HeroService } from 'src/app/services/hero.service';
 import { Location } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 
 @Component({
@@ -40,12 +41,17 @@ export class HeroFormComponent implements OnInit {
     this.location.back();
   }
 
-  add(): void {
+  newHero(){
+    this.model = new Hero(42,'','');
+  }
+
+  add(hero: Hero): void {
+    // console.log(this.model);
+    this.model = hero;
+    // console.log(this.model);
     if (this.model) {
       this.heroService.addHero(this.model)
       .subscribe(() => this.goBack());
     }
   }
-
-
 }
