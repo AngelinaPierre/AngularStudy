@@ -4752,7 +4752,7 @@ updateProfile(){
 <hr>
 <br>
 
-## Using the FormBuildeer service to geneerate controls
+## Using the FormBuildeer service to generate controls
 
 <br>
 
@@ -4806,7 +4806,325 @@ constructor(
 
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular
+
+@Component({  
+  selector: 'app-profile-editor',
+  templateUrl: './profile-editor.component.html',
+  styleURls: ['/profile-editor.component.css'],
+})
+
+export class ProfileEditorComponent {
+  profileForm = this.fb.group({
+    firstName [''],
+    lastName: [''],
+    address: this.fb.group({
+      street: [''],
+      city: [''],
+      state: [''],
+      zip:[''],
+    }),
+  });
+
+  constructor(
+    private fb: FormBuilder
+  ) { }
+}
 ~~~
+
+- In the preceding example, you use the `group()` method with the same value for each control name is an array containing the initial value as the first item in the array.
+
+> TIP:
+> > 
+> You can define the control with just the initial value, but if your controls need sync or async validation, add sync and async validators as the second and third item in the array.
+
+<br>
+
+- Compare using the form builder to creating the instances manually.
+
+~~~
+[src/app/profile-editor/profile-editor.component.ts (instances)]
+profileForm = new FormGroup({
+  fistName: new FormControl(''),
+  lastName: new FormControl(''),
+  address: new FormGrouup({
+    street: new FormControl(''),
+    city: new FormControl(''),
+    state: new FormControl(''),
+    zip: new FormControl(''),
+  })
+});
+~~~
+
+~~~
+[src/app/profile-editor/profile-editor.component.ts (form builder)]
+
+profileForm = this.fb.group({
+  firstName: [''],
+  lastName: [''],
+  address: this.fb.group({
+    street: [''],
+    city: [''],
+    state: [''],
+    zip: ['']
+  }),
+});
+
+~~~
+
+<br>
+<hr>
+<br>
+
+## Validating form input
+
+<br>
+
+- Form `validation` is used to ensure that user input is complete and correct.
+- This section covers adding a single validator to a form control and displaying the overall form status.
+- Form validation is covered more extensively in the [Form Validation]() guide.
+- Use the following steps to add form validation.
+1) Import a validator function in your form component.
+2) Add the validator to the field in the form.
+3) Add logic to handle the validation status.
+
+- The most common validation is making a field required.
+- The following example shows how to add a required validation to the `fistName` control and display the result of validation.
+
+<br>
+
+#### `import a validator function`
+
+<br>
+
+- Reactive forms include a set of validator functions for common use cases.
+- These functions receive a control to validate against and return an error object or a null value based on the validation check.
+- Import the [Validators]() class from the `@angular/forms` package.
+
+~~~
+[profile-editor/profile-editor.component.ts (import)]
+
+import { Validators } from '@angular/forms';
+~~~
+
+<br>
+
+#### `Make a field required`
+
+<br>
+
+- In the `ProfileEditor` component, add the `Validators.required` static method as the second item in the array for the `firstName` control.
+
+~~~
+[profile-editor.component.ts (required validator)]
+
+profileForm = this.fb.group({
+  fistName: ['', Validators.required],
+  lastName: [''],
+  address: this.fb.group({
+    street: [''],
+    city: [''],
+    state: [''],
+    zip: [''],
+  }),
+});
+~~~
+
+<br>
+
+#### `Display form status`
+
+<br>
+
+- When you add a required field to the form control, its initial status is invalid.
+- This invalid status propagates to the parent form group element, making it status invalid.
+- Access the current status of the form group instance through its `status` property.
+- Display the current status of `profileForm` using interpolation.
+
+~~~
+[profile-editor.component.ts (display status)]
+
+<p>Form Status: {{ profileForm.status }}</p>
+~~~
+
+![](./TourOfHeroes/angular-tour-of-heroes/src/assets/Capture13.PNG)
+
+<br>
+
+- The `Submit button` is disabled because `profileForm` is invalid due to the required `firstName` form control.
+- After you fill out the `fistName` input, the form becomes valid and the `Submit button` is enabled.
+- For more on form validation, visit the [FormValidation]() guide.
+
+<br>
+<hr>
+<br>
+
+## Creating dynamic forms
+
+<br>
+
+- [FormArray]() is an alternative to [FormGroup]() for managing any number of unnamed controls.
+- As with form group instances, you can dynamically insert and remove controls from form array instances, and the form array instance value and validation status is calculated from its child controls.
+- However, you don't need to define a key for each control by name, so this is a great option if you don't know the number of child values in advance.
+- To define a dynamic form, take the following steps.
+1) Import the [FormArray]() class.
+2) Define a [FormArray]() control.
+3) Access the [FormArray]() control with a getter method.
+4) Display the form array in a template.
+
+<br>
+
+- The following example shows you how to manage an array of `aliases` in `ProfileEditor`.
+
+<br>
+
+#### `Import the FormArray class`
+
+<br>
+
+- Import the [FormArray]() class from `@angular/forms` to use for type information. 
+- The [FormBuilder]() service is ready to create a [FormArray]() instance.
+
+~~~
+[profile-editor.component.ts (import)]
+
+import { FormArray } from '@angular/forms';
+~~~
+
+<br>
+
+#### `Define a FormArray control`
+
+<br>
+
+- You can initialize a form array with any number of controls, from zero to many, by defining them in an array.
+- Add an `aliases` property to the form group instance for `profileForm` to define the form array.
+- Use the [FormBuilder.array()]() method to define the array, and the [FormBuilder.control()]() method to populate the array with an initial control.
+
+~~~
+[profile-editor.component.ts (aliases form array)]
+
+profileForm = this.fb.group({
+  firstName: ['', Validators.required],
+  lastName: [''],
+  address: this.fb.group({
+    street: [''],
+    city:[''],
+    state:[''],
+    zip: [''],
+  }),
+  aliases: this.fb.array([
+    this.fb.control('')
+  ])
+});
+~~~
+
+- The aliases control in the form group instance is now populated with a single control until more controls are added dynamically.
+
+<br>
+
+#### `Access the FormArray control`
+
+<br>
+
+- A getter provides access to the aliases in the form array instance compared to reapeating the `profileForm.get()` method to get each instance.
+- The form array instance represents an undefined number of controls in an array.
+- It's convenient to access a control through a getter, and this approach is straightforward to repeat for additional controls.
+- Use the getter syntax to create an `aliases` class property to retrieve the alias's form array control from the parent form group.
+
+~~~
+get aliases() {
+  return this.profileForm.get('aliases') as FormArray;
+}
+~~~
+
+<br>
+
+> NOTE:
+> >
+> Because the returned control is of the type [AbstractControl](), you need to provide an explicit type to access the method syntax for the form array instance.
+
+<br>
+
+- Define a method to dynamically insert an alias control into the alias's form array.
+- The [FormArray.push()]() method inserts the control as a new item in the array.
+
+~~~
+addAlias() {
+  this.aliases.push(this.fb.control(''));
+}
+~~~
+
+- In the template, each control is displayed as a separate input field.
+
+<br>
+
+#### `Display the form array in the template`
+
+<br>
+
+- To attach the aliases from your form model, you must add it to the template.
+- Similar to the [FormGroupName]() input provided by `FormGroupNameDirective`, [formArrayName]() binds communication from the form array instance to the template with `FormArrayNameDirective`.
+- Add the following template HTML after the `<div>` closing the [formGroupName]() element.
+
+~~~
+[profile-editor.component.html (aliases form array tempalte)]
+
+<div formArrayName="aliases">
+  <h2>Aliases</h2>
+  <button type="button" (click)="addAlias()">+ Add another alias</button>
+
+  <div *ngFor="let alias of aliases.controls; let i=index">
+    <!-- The repeated alias template -->
+    <label for="alias-{{ i }}">Alias: </label>
+    <input id="alias-{{ i }}" type="text" [formControlName]="i" />
+  </div>
+</div>
+~~~
+
+- The [*ngFor]() directive iterates over each form control instance provided by the aliases form array instance.
+- Because form array elements are unnamed, you assign the index to the `i` variable and pass it to each control to bind it to the [formControlName]()  input.
+
+![](./TourOfHeroes/angular-tour-of-heroes/src/assets/profile-editor-4.png)
+
+<br>
+
+- Each time a new alias instance is added, the new form array instance is provided its control based on the index.
+- This lets you track each individual control when calculating the status and value of the root control.
+
+<br>
+
+#### `Add an alias`
+
+<br>
+
+- Initially, the form contains one `Alias` field.
+- To add another field, click the `Add Alias button`.
+- You can also validate the array of aliases reported by the form model displayed by [Form]() `value` at the bottom of the template.
+
+<br>
+
+> NOTE:
+> >
+> Instead of a form control instance for each alias, you can compose another form group instance with additional fields. The process of defining a control for each item is the same.
+
+<br>
+<hr>
+<br>
+
+## Reactive form API summary
+
+<br>
+
+- The following table lists the base classes and services used to create and manage reactive form controls.
+- For complex syntax details, see the API reference documentation for the [Forms package]().
+
+![](./TourOfHeroes/angular-tour-of-heroes/src/assets/Capture14.PNG)
+
+<br>
+
+![](./TourOfHeroes/angular-tour-of-heroes/src/assets/Capture15.PNG)
+
+
 
 
 
