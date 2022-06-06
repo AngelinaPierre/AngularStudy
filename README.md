@@ -5124,10 +5124,36 @@ addAlias() {
 
 ![](./TourOfHeroes/angular-tour-of-heroes/src/assets/Capture15.PNG)
 
+<br>
+
+===================== [ANNOTATIONS] =====================
 
 
+[Reactive Forms live-example](https://angular.io/generated/live-examples/reactive-forms/stackblitz.html)
 
 
+## [`Observable`](https://angular.io/guide/glossary#observable)
+
+- A producer of multiple values, which it pushes to [subscribers]().
+- Used for assynchrounous event handling throughout Angular.
+- You execute an observable by subscribing to it with tis `subscribe()` method, passing callbacks for notifications of new values, errors, or completion.
+- Observables can deliver in one the following ways a single value or multiple values of any type to subscribers.
+  - Synchronously as a function delivers a value to the requester.
+  - Scheduled
+- A subscriber receives notification of new values as they are produced and notification of either normal completion or error completion.
+- Angular uses a third-party library named [Reactive Extensions (RxJS)]().
+
+<br>
+
+## [`FormControl`](https://angular.io/api/forms/FormControl)
+
+- Tracks the value and validation status of an individual form control.
+- This is one of the four fundamental building blocks of Angular forms, along with FormGroup, FormArray and FormRecord.
+- It extends the AbstractControl class that implements most of the base functionality for accessing the value, validation status, user interactions and events.
+- FormControl takes a single generic argument, which describes the type of its value. 
+- This argument always implicitly includes null because the control can be reset. To change this behavior, set nonNullable or see the usage notes below.
+<br>
+<hr>
 
 
 

@@ -1,0 +1,37 @@
+<div class="profile-editor">
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+        <label for="first-name">First Name: </label>
+        <input type="text" id="first-name" formControlName="firstName" />
+        <p>Value: {{profileForm.value.firstName | json}}</p>
+        <label for="last-name">Last Name: </label>
+        <input type="text" id="last-name" formControlName="lastName" />
+        <p>Value: {{profileForm.value.lastName | json}}</p>
+        <div formGroupName="address">
+            <h2>Address</h2>
+
+            <label for="street">Street: </label>
+            <input type="text" id="street" formControlName="street" />
+            <p>Value: {{profileForm.value.address.street | json}}</p>
+
+            <label for="city">City: </label>
+            <input type="text" id="city" formControlName="city" />
+            <p>Value: {{profileForm.value.address.city| json}}</p>
+
+            <label for="state">State: </label>
+            <input type="text" id="state" formControlName="state" />
+            <p>Value: {{profileForm.value.address.state | json}}</p>
+
+            <label for="zip">Zip: </label>
+            <input type="text" id="zip" formControlName="zip" />
+            <p>Value: {{profileForm.value.address.zip | json}}</p>
+        </div>
+
+        <div class="btn-submit">
+            <p>Complete the form to enable the button.</p>
+            <button
+                type="submit"
+                [disabled]="!profileForm.valid"
+            >Submit</button>
+        </div>
+    </form>
+</div>

@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -13,6 +14,8 @@ import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { InMemoryDataService } from './services/InMemoryData/in-memory-data.service';
 import { HeroSearchComponent } from './components/hero-search/hero-search.component';
 import { HeroFormComponent } from './components/hero-form/hero-form.component';
+import { NameEditorComponent } from './components/name-editor/name-editor.component';
+import { ProfileEditorComponent } from './components/profile-editor/profile-editor.component';
 
 
 @NgModule({
@@ -27,7 +30,8 @@ import { HeroFormComponent } from './components/hero-form/hero-form.component';
     // Remove it when a real server is ready to receive requests.
     HttpClientInMemoryWebApiModule.forRoot(
       InMemoryDataService, { dataEncapsulation: false }
-    )
+    ),
+    ReactiveFormsModule,
   ],
   declarations: [
     AppComponent,
@@ -36,7 +40,9 @@ import { HeroFormComponent } from './components/hero-form/hero-form.component';
     HeroDetailComponent,
     MessagesComponent,
     HeroSearchComponent,
-    HeroFormComponent
+    HeroFormComponent,
+    NameEditorComponent,
+    ProfileEditorComponent
   ],
   bootstrap: [ AppComponent ]
 })

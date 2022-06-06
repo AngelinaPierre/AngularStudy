@@ -12,9 +12,15 @@
 
 <ul class="heroes">
   <div>
+    <button type="button" class="add-button" routerLink="/name-editor">
+      Reactive Forms
+    </button>
+    <button type="button" class="add-button" routerLink="/profile-editor">Profile Editor</button>
     <button type="button" class="add-button" routerLink="/hero-form">
       Add hero
     </button>
+  </div>
+  <div>
   </div>
   <li *ngFor="let hero of heroes">
     <a routerLink="/detail/{{hero.id}}">

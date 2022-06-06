@@ -4,6 +4,8 @@ import { HeroesComponent } from './components/heroes/heroes.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { HeroDetailComponent } from './components/hero-detail/hero-detail.component';
 import { HeroFormComponent } from './components/hero-form/hero-form.component';
+import { NameEditorComponent } from './components/name-editor/name-editor.component';
+import { ProfileEditorComponent } from './components/profile-editor/profile-editor.component';
 
 const routes: Routes = [
   {
@@ -27,6 +29,14 @@ const routes: Routes = [
   {
     path: 'hero-form',
     component: HeroFormComponent,
+  },
+  {
+    path: 'name-editor',
+    component: NameEditorComponent,
+  },
+  {
+    path: 'profile-editor',
+    component: ProfileEditorComponent,
   }
 ];
 
