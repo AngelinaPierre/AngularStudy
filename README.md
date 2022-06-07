@@ -5145,6 +5145,15 @@ addAlias() {
 
 <br>
 
+## [Template-driven Forms](https://angular.io/guide/forms)
+
+- Template-driven forms use two-way data binding to update the data model in the component as changes are made in the template and vice versa.
+
+
+<br>
+<hr>
+<br>
+
 ## [`FormControl`](https://angular.io/api/forms/FormControl)
 
 - Tracks the value and validation status of an individual form control.
@@ -5152,12 +5161,67 @@ addAlias() {
 - It extends the AbstractControl class that implements most of the base functionality for accessing the value, validation status, user interactions and events.
 - FormControl takes a single generic argument, which describes the type of its value. 
 - This argument always implicitly includes null because the control can be reset. To change this behavior, set nonNullable or see the usage notes below.
+
 <br>
 <hr>
+<br>
 
+## [ReactiveFormsModule](https://angular.io/api/forms/ReactiveFormsModule)
 
+- Exports the required infrastructure and directives for reactive forms, making them available for import by NgModules that import this module.
+- Providers associated with this module:
+  - FormBuilder
+  - RadioControlRegistry
 
+<br>
+<hr>
+<br>
 
+## [FormControlDirective](https://angular.io/api/forms/FormControlDirective)
+
+- Synchronizes a standalone `FormControl` instance to a form control element.
+- Note that support for using the [ngModeel]() input property and `ngModelChange` event with reactive forms directives was deprecated in Angular v6 and is scheduled for removal in a future version of Angular.
+- For details, see [Deprecated features]().
+
+<br>
+<hr>
+<br>
+
+## [AsyncPipe](https://angular.io/api/common/AsyncPipe)
+
+- Unwraps a value from an asynchronous primitive.
+~~~
+{{ obj_expression | async }}
+~~~
+- The [async]() pipe subscribes to an `Observable` or `Promise` and returns the latest value it has emitted.
+- When a new value is emitted, the [async]() pipe marks the component to be checked for changes.
+- When the component gets destroyed, the [async]() pipe unsubscribes automatically to avoid potential memory leaks.
+- When the reference of the expression changes, the [async]() pipe automatically unsubscribes from the old `Observable` or `Promise` and subscribes to the new one.
+- Further information is available in the [Usage Notes...](https://angular.io/api/common/AsyncPipe#usage-notes)
+
+<br>
+<hr>
+<br>
+
+## [AbstractControl](https://angular.io/api/forms/AbstractControl)
+
+- This is the base class for [FormControl](), [FormGroup](), and [FormArray]().
+
+<br>
+<hr>
+<br>
+
+<br>
+<hr>
+<br>
+
+<br>
+<hr>
+<br>
+
+<br>
+<hr>
+<br>
 
 
 
